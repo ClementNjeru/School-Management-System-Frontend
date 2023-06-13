@@ -39,7 +39,7 @@ import { Button, Toast } from "flowbite-react";
 import axios from "axios";
 
 import { ThemeContext } from "../context/ThemeContext";
-import AdditionalPayUpdate from "../Components/modals/AdditionalPayCreate";
+import AdditionalPayUpdate from "../Components/modals/AdditionalPayUpdate";
 import AdditionalPayCreate from "../Components/modals/AdditionalPayCreate";
 const KES = new Intl.NumberFormat("en-US", {
   style: "currency",

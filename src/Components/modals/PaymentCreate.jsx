@@ -42,11 +42,11 @@ const PaymentCreate = ({
   // reset form
   useEffect(() => {
     reset({
-      termId: new String(),
-      classId: new String(),
-      studentId: new String(),
-      amount: new Number(),
-      reference: new String(),
+      termId: "",
+      classId: "",
+      studentId: "",
+      amount: "",
+      reference: "",
       payment_mode: "MPESA",
     });
   }, [reset]);

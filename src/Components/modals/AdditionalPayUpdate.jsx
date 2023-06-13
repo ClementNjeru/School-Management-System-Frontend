@@ -35,7 +35,7 @@ const AdditionalPayUpdate = ({
     reset({
       id: objData?.id ?? 0,
       name: objData?.name ?? "",
-      amount: objData?.amount ?? 0,
+      amount: Number(objData?.amount) ?? 0,
     });
   }, [reset, objData]);
 

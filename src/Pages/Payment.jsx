@@ -16,7 +16,7 @@ import MaterialReactTable, {
   MRT_ToggleFiltersButton,
 } from "material-react-table";
 import { format } from "date-fns";
-
+import PrintIcon from "@mui/icons-material/Print";
 import {
   Box,
   Dialog,
@@ -40,6 +40,7 @@ import PaymentCreate from "../Components/modals/PaymentCreate";
 import axios from "axios";
 import PaymentUpdate from "../Components/modals/PaymentUpdate";
 import { ThemeContext } from "../context/ThemeContext";
+import Invoice from "../Components/Invoice";
 const KES = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "KES",
@@ -75,6 +76,16 @@ const Payment = () => {
 
     pageSize: 10,
   });
+
+  const [payments, setPayment] = useState({});
+  const [open, setOpen] = useState(false);
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   // fetch students
   const fetchStudentsList = async () => {
@@ -377,6 +388,16 @@ const Payment = () => {
                     <Delete />
                   </IconButton>
                 </Tooltip>
+                <Tooltip arrow title="Print Invoice">
+                  <IconButton
+                    onClick={() => {
+                      setPayment(row.original);
+                      handleClick();
+                    }}
+                  >
+                    <PrintIcon />
+                  </IconButton>
+                </Tooltip>
               </Box>
             )}
             rowCount={data?.itemsPerPage ?? 0}
@@ -472,6 +493,10 @@ const Payment = () => {
         onClose={() => setUpdateModalOpen(false)}
         objData={selectedData?.original}
       />
+      <Dialog open={open} onClose={handleClose}>
+        <Invoice payments={payments} />
+        <Button onClick={handleClose}>Close</Button>
+      </Dialog>
       <Dialog
         open={openConfirmDialog}
         onClose={handleCloseConfirmDialog}

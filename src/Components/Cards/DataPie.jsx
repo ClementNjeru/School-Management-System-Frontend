@@ -17,7 +17,7 @@ const PaymentModesPie = ({ paymentModes, isLoading }) => {
   ];
 
   return (
-    <div className="bg-white mt-3 lg:h-96 md:h-auto p-2 w-150 rounded-lg shadow">
+    <div className="bg-white mt-3 lg:h-96 h-auto p-2 w-150 rounded-lg shadow">
       <p className="text-gray-700 font-semibold">Payment Modes Stats(Today)</p>
       <>
         {isLoading ? (

@@ -40,9 +40,9 @@ const ClassUpdate = ({
       id: objData?.id ?? 0,
       name: objData?.name ?? "",
       teacherId: objData?.teacherId ?? 0,
-      term_1: objData?.term_1 ?? 0,
-      term_2: objData?.term_2 ?? 0,
-      term_3: objData?.term_3 ?? 0,
+      term_1: Number(objData?.term_1) ?? 0,
+      term_2: Number(objData?.term_2) ?? 0,
+      term_3: Number(objData?.term_3) ?? 0,
     });
   }, [reset, objData]);
 
