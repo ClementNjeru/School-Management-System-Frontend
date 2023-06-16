@@ -33,8 +33,8 @@ function FeeData() {
         <div className="bg-white mt-3 lg:h-96 h-auto p-2 w-150 rounded-lg shadow">
             <p className="text-gray-700 font-semibold">Payments(per year)</p>
             <BarChart
-                width={550}
-                height={450}
+                width={500}
+                height={400}
                 data={data}
                 margin={{
                     top: 20,
