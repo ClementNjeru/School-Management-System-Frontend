@@ -76,6 +76,10 @@ const Student = () => {
   });
 
   const currentTerm = useMemo(() => {
+    if (!termList || termList.length === 0) {
+      return null;
+    }
+
     const currentDate = new Date();
 
     for (let i = 0; i < termList.length; i++) {
