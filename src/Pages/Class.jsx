@@ -153,16 +153,27 @@ const Class = () => {
     []
   );
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const deletePost = useMutation((id) => {
     return axios
-      .delete(`${process.env.REACT_APP_BASE_URL}/teacher/${id}`)
+      .delete(`${process.env.REACT_APP_BASE_URL}/class/${id}`)
       .then(() => {
         queryClient.invalidateQueries(["classes-data"]);
         setShowSuccessToast(true);
         refetch();
       })
-      .catch(() => {
+      .catch((error) => {
         setShowErrorToast(true);
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage("An error occurred while deleting the Class.");
+        }
       });
   });
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -193,13 +204,13 @@ const Class = () => {
     if (showSuccessToast) {
       successToastTimer = setTimeout(() => {
         setShowSuccessToast(false);
-      }, 2000);
+      }, 5000);
     }
 
     if (showErrorToast) {
       errorToastTimer = setTimeout(() => {
         setShowErrorToast(false);
-      }, 2000);
+      }, 5000);
     }
 
     return () => {
@@ -441,7 +452,7 @@ const Class = () => {
           <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
             <IoMdClose className="h-5 w-5" />
           </div>
-          <div className="ml-3 text-sm font-normal">Data update failed.</div>
+          <div className="ml-3 text-sm font-normal">{errorMessage}</div>
           <Toast.Toggle onClick={() => setShowErrorToast(false)} />
         </Toast>
       )}
