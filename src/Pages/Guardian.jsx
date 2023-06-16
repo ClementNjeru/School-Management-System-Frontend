@@ -82,7 +82,9 @@ const Guardian = () => {
 
       fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
 
-      fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
+      if (globalFilter) {
+        fetchURL.pathname = `/api/guardians/search/${globalFilter}`;
+      }
 
       fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
 

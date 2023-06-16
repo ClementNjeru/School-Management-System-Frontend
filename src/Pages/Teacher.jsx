@@ -82,7 +82,9 @@ const Teacher = () => {
 
       fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
 
-      fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
+      if (globalFilter) {
+        fetchURL.pathname = `/api/teachers/search/${globalFilter}`;
+      }
 
       fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
 
