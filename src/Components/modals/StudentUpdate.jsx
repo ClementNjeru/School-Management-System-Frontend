@@ -37,6 +37,29 @@ const StudentUpdate = ({
     bus_fee: false,
     boarding_fee: false,
   });
+  useEffect(() => {
+    if (Number(objData?.StudentTermFee[0]?.bus_fee) !== 0) {
+      setAdditionalPayments((prevState) => ({ ...prevState, bus_fee: true }));
+    }
+    if (Number(objData?.StudentTermFee[0]?.boarding_fee) !== 0) {
+      setAdditionalPayments((prevState) => ({
+        ...prevState,
+        boarding_fee: true,
+      }));
+    }
+    if (Number(objData?.StudentTermFee[0]?.food_fee) !== 0) {
+      setAdditionalPayments((prevState) => ({ ...prevState, food_fee: true }));
+    }
+
+    // Cleanup function
+    return () => {
+      setAdditionalPayments({
+        food_fee: false,
+        bus_fee: false,
+        boarding_fee: false,
+      });
+    };
+  }, [objData]);
 
   // first_name,last_name,dob,gender
   const FormSchema = z.object({
@@ -132,29 +155,6 @@ const StudentUpdate = ({
             Update Student
           </h3>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/* <div>
-              <Label
-                htmlFor="id"
-                value="ID"
-                color={`${errors.id ? "failure" : "gray"}`}
-              />
-              <Controller
-                control={control}
-                name="id"
-                defaultValue={objData?.id ?? 0}
-                render={({ field }) => (
-                  <TextInput
-                    id="id"
-                    placeholder="ID"
-                    required={true}
-                    color={`${errors.id ? "failure" : "gray"}`}
-                    helperText={errors.id?.message}
-                    {...field}
-                    disabled={true}
-                  />
-                )}
-              />
-            </div> */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <div className="mb-2 block">

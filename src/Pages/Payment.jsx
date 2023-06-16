@@ -226,7 +226,7 @@ const Payment = () => {
 
   const deletePost = useMutation((id) => {
     return axios
-      .delete(`${process.env.REACT_APP_BASE_URL}/feepayment/${id}`)
+      .delete(`${process.env.REACT_APP_BASE_URL}/fee-payments/${id}`)
       .then(() => {
         queryClient.invalidateQueries(["guest-data"]);
         setShowSuccessToast(true);

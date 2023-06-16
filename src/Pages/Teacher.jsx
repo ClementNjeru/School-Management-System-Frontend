@@ -82,7 +82,9 @@ const Teacher = () => {
 
       fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
 
-      fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
+      if (globalFilter) {
+        fetchURL.pathname = `/api/teachers/search/${globalFilter}`;
+      }
 
       fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
 
@@ -127,20 +129,29 @@ const Teacher = () => {
 
     []
   );
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const deletePost = useMutation(
-    (id) => axios.delete(`${process.env.REACT_APP_BASE_URL}/teacher/${id}`),
-    {
-      onSuccess: () => {
-        refetch(); // using refetch from useQuery
+  const deletePost = useMutation((id) => {
+    return axios
+      .delete(`${process.env.REACT_APP_BASE_URL}/teacher/${id}`)
+      .then(() => {
+        queryClient.invalidateQueries(["teachers-data"]);
         setShowSuccessToast(true);
-      },
-      onError: () => {
-        // Handle error
+        refetch();
+      })
+      .catch((error) => {
         setShowErrorToast(true);
-      },
-    }
-  );
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage("An error occurred while deleting the teacher.");
+        }
+      });
+  });
 
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
@@ -170,13 +181,13 @@ const Teacher = () => {
     if (showSuccessToast) {
       successToastTimer = setTimeout(() => {
         setShowSuccessToast(false);
-      }, 2000);
+      }, 5000);
     }
 
     if (showErrorToast) {
       errorToastTimer = setTimeout(() => {
         setShowErrorToast(false);
-      }, 2000);
+      }, 5000);
     }
 
     return () => {
@@ -418,7 +429,7 @@ const Teacher = () => {
           <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
             <IoMdClose className="h-5 w-5" />
           </div>
-          <div className="ml-3 text-sm font-normal">Data update failed.</div>
+          <div className="ml-3 text-sm font-normal">{errorMessage}</div>
           <Toast.Toggle onClick={() => setShowErrorToast(false)} />
         </Toast>
       )}
