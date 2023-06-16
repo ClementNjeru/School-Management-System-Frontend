@@ -15,7 +15,7 @@ const PaymentUpdate = ({
   setShowSuccessToast,
 }) => {
   const [paymentMode, setPaymentMode] = React.useState("Cash");
-  const FormSchema = z.object({});
+  const FormSchema = z.object({ id: z.number().optional() });
 
   const {
     handleSubmit,
@@ -33,6 +33,7 @@ const PaymentUpdate = ({
   // reset form
   useEffect(() => {
     reset({
+      id: objData?.id ?? 0,
       termId: objData?.termId ?? 0,
       classId: objData?.classId ?? 0,
       studentId: objData?.studentId ?? 0,
@@ -89,7 +90,7 @@ const PaymentUpdate = ({
     (updatedPost) => {
       const { id, ...postData } = updatedPost;
       return axios.patch(
-        `${process.env.REACT_APP_BASE_URL}/feepayment/${id}`,
+        `${process.env.REACT_APP_BASE_URL}/fee-payments/${id}`,
         postData
       );
     },
