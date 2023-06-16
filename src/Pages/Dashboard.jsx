@@ -3,6 +3,7 @@ import axios from "axios";
 import React from "react";
 import Stats from "../Components/Cards/Stats";
 import PaymentModesPie from "../Components/Cards/DataPie";
+import FeeData from "../Components/Cards/FeeData";
 
 const Dashboard = () => {
   const fetchData = async () => {
@@ -55,7 +56,17 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <PaymentModesPie paymentModes={paymentModes} isLoading={isLoading} />
+        
+        <div className=""> 
+          <FeeData />
+        </div>
+       
       </div>
+{/* 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+       
+      </div> */}
+
     </section>
   );
 };
