@@ -223,7 +223,7 @@ const Student = () => {
       },
     ],
 
-    []
+    [currentTerm]
   );
 
   const deletePost = useMutation((id) => {
@@ -417,8 +417,21 @@ const Student = () => {
             >
               <Typography>
                 Tuition Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.tuition_fee ?? 0)}
+                {currentTerm === "Term 1"
+                  ? KES.format(
+                      row.original?.StudentTermFee[0]?.term_one_fee ?? 0
+                    )
+                  : currentTerm === "Term 2"
+                  ? KES.format(
+                      row.original?.StudentTermFee[0]?.term_two_fee ?? 0
+                    )
+                  : currentTerm === "Term 3"
+                  ? KES.format(
+                      row.original?.StudentTermFee[0]?.term_three_fee ?? 0
+                    )
+                  : KES.format(0)}
               </Typography>
+
               <Typography>
                 Bus Fee:{" "}
                 {KES.format(row.original?.StudentTermFee[0]?.bus_fee ?? 0)}
