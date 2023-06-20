@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import React from "react";
-import Stats from "../Components/Cards/Stats";
-import PaymentModesPie from "../Components/Cards/DataPie";
-import FeeData from "../Components/Cards/FeeData";
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import React from 'react';
+import Stats from '../Components/Cards/Stats';
+import PaymentModesPie from '../Components/Cards/DataPie';
+import FeeData from '../Components/Cards/FeeData';
 
 const Dashboard = () => {
   const fetchData = async () => {
@@ -14,6 +14,7 @@ const Dashboard = () => {
         classesResponce,
         guardiansResponce,
         paymentModeResponce,
+        feeResponce,
       ] = await Promise.all([
         axios.get(`${process.env.REACT_APP_BASE_URL}/students/count`),
         axios.get(`${process.env.REACT_APP_BASE_URL}/teachers/count`),
@@ -21,6 +22,9 @@ const Dashboard = () => {
         axios.get(`${process.env.REACT_APP_BASE_URL}/guardians/count`),
         axios.get(
           `${process.env.REACT_APP_BASE_URL}/payments/get/paymentmodes`
+        ),
+        axios.get(
+          `${process.env.REACT_APP_BASE_URL}/student-fees/total/yearly`
         ),
       ]);
 
@@ -30,19 +34,21 @@ const Dashboard = () => {
         classes: classesResponce.data.totalClasses,
         guardians: guardiansResponce.data.totalGuardians,
         paymentModes: paymentModeResponce.data.todayRevenueByPaymentMode,
+        feePayment: feeResponce.data,
       };
     } catch (error) {
-      throw new Error("Error fetching data");
+      throw new Error('Error fetching data');
     }
   };
 
-  const { data, isLoading } = useQuery(["dashboard-data"], fetchData);
+  const { data, isLoading } = useQuery(['dashboard-data'], fetchData);
 
   const studentsCount = data?.students;
   const teachersCount = data?.teachers;
   const classesCount = data?.classes;
   const guardiansCount = data?.guardians;
   const paymentModes = data?.paymentModes;
+  const feePayments = data?.feePayment;
 
   return (
     <section className="p-3 ">
@@ -56,17 +62,15 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <PaymentModesPie paymentModes={paymentModes} isLoading={isLoading} />
-        
-        <div className=""> 
-          <FeeData />
-        </div>
-       
-      </div>
-{/* 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-       
-      </div> */}
 
+        <div className="">
+          <FeeData feePayments={feePayments} isLoading={isLoading} />
+        </div>
+      </div>
+      {/*
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+
+      </div> */}
     </section>
   );
 };
