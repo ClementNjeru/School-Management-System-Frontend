@@ -139,7 +139,7 @@ const Student = () => {
     keepPreviousData: true,
   });
   useEffect(() => {
-    data && setTableData(data.items);
+    data && setTableData(data?.items);
   }, [data]);
 
   const columns = useMemo(
