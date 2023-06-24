@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import MaterialReactTable, {
   MRT_FullScreenToggleButton,
@@ -6,8 +6,8 @@ import MaterialReactTable, {
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
-} from "material-react-table";
-import { format } from "date-fns";
+} from 'material-react-table';
+import { format } from 'date-fns';
 
 import {
   Box,
@@ -16,21 +16,21 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-} from "@mui/material";
+} from '@mui/material';
 
-import RefreshIcon from "@mui/icons-material/Refresh";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-const KES = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "KES",
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+const KES = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'KES',
 });
 
 const StudentClassReport = () => {
   const [columnFilters, setColumnFilters] = useState([]);
 
   const [tableData, setTableData] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
   const tableInstanceRef = useRef(null);
   const [sorting, setSorting] = useState([]);
 
@@ -51,16 +51,50 @@ const StudentClassReport = () => {
       );
       return response.data.grade;
     } catch (error) {
-      throw new Error("Error fetching class data");
+      throw new Error('Error fetching class data');
     }
   };
-  const { data: classList } = useQuery(["classes-data"], fetchTeachersList, {
+  const { data: classList } = useQuery(['classes-data'], fetchTeachersList, {
+    cacheTime: 10 * 60 * 1000, // cache for 10 minutes
+  });
+  // Get current term> school calendar
+  const fetchTermList = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/terms`
+      );
+      return response.data?.items;
+    } catch (error) {
+      throw new Error('Error fetching term data');
+    }
+  };
+  const { data: termList } = useQuery(['term-data'], fetchTermList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
+  const currentTerm = useMemo(() => {
+    if (!termList || termList.length === 0) {
+      return null;
+    }
+
+    const currentDate = new Date();
+
+    for (let i = 0; i < termList.length; i++) {
+      const term = termList[i];
+      const startDate = new Date(term.startDate);
+      const endDate = new Date(term.endDate);
+
+      if (currentDate >= startDate && currentDate <= endDate) {
+        return term.name;
+      }
+    }
+
+    return null; // If no term matches the current date
+  }, [termList]);
+
   const { data, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
-      "class-data",
+      'class-data',
 
       columnFilters, //refetch when columnFilters changes
 
@@ -79,18 +113,18 @@ const StudentClassReport = () => {
       );
 
       fetchURL.searchParams.set(
-        "start",
+        'start',
 
         `${pagination.pageIndex * pagination.pageSize}`
       );
 
-      fetchURL.searchParams.set("size", `${pagination.pageSize}`);
+      fetchURL.searchParams.set('size', `${pagination.pageSize}`);
 
-      fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
+      fetchURL.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
 
-      fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
+      fetchURL.searchParams.set('globalFilter', globalFilter ?? '');
 
-      fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+      fetchURL.searchParams.set('sorting', JSON.stringify(sorting ?? []));
 
       const response = await fetch(fetchURL.href);
 
@@ -114,63 +148,89 @@ const StudentClassReport = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
+        accessorKey: 'id',
 
-        header: "Id",
+        header: 'Id',
       },
       {
-        accessorKey: "first_name",
+        accessorKey: 'first_name',
 
-        header: "First Name",
-      },
-
-      {
-        accessorKey: "last_name",
-
-        header: "Last Name",
+        header: 'First Name',
       },
 
       {
-        accessorKey: "dob",
+        accessorKey: 'last_name',
 
-        header: "DOB",
+        header: 'Last Name',
+      },
+
+      {
+        accessorKey: 'dob',
+
+        header: 'DOB',
         Cell: ({ cell }) => {
           const dateTime = cell.getValue?.();
-          return dateTime ? format(new Date(dateTime), "yyyy-MM-dd") : "";
+          return dateTime ? format(new Date(dateTime), 'yyyy-MM-dd') : '';
         },
       },
       {
-        accessorKey: "Class.name",
+        accessorKey: 'Class.name',
 
-        header: "Class",
+        header: 'Class',
       },
       {
-        accessorKey: "StudentTermFee[0]", // Update the index based on the correct position in the array
+        accessorKey: 'StudentTermFee[0].total_fee',
 
-        header: "Total Fee",
+        header: 'Total Fee',
         size: 50,
         Cell: ({ row }) => {
           const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
           const totalFee = studentTermFee
-            ? Number(studentTermFee.total_fee)
+            ? currentTerm === 'Term 1'
+              ? Number(studentTermFee.term_one_fee) +
+                Number(studentTermFee.bus_fee) +
+                Number(studentTermFee.boarding_fee) +
+                Number(studentTermFee.food_fee)
+              : currentTerm === 'Term 2'
+              ? Number(studentTermFee.term_two_fee) +
+                Number(studentTermFee.bus_fee) +
+                Number(studentTermFee.boarding_fee) +
+                Number(studentTermFee.food_fee)
+              : currentTerm === 'Term 3'
+              ? Number(studentTermFee.term_three_fee) +
+                Number(studentTermFee.bus_fee) +
+                Number(studentTermFee.boarding_fee) +
+                Number(studentTermFee.food_fee)
+              : 0
             : 0;
+
           return `${KES.format(totalFee)}`;
         },
       },
-      {
-        accessorKey: "StudentTermFee[0]", // Update the index based on the correct position in the array
 
-        header: "Fee Balance",
+      {
+        accessorKey: 'StudentTermFee[0]',
+
+        header: 'Fee Balance',
         size: 50,
         Cell: ({ row }) => {
           const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
-          const balance = studentTermFee ? Number(studentTermFee.balance) : 0;
+          const balance = studentTermFee
+            ? currentTerm === 'Term 1'
+              ? Number(studentTermFee.term_one_balance)
+              : currentTerm === 'Term 2'
+              ? Number(studentTermFee.term_two_balance)
+              : currentTerm === 'Term 3'
+              ? Number(studentTermFee.term_three_balance)
+              : 0
+            : 0;
+
           return `${KES.format(balance)}`;
         },
       },
     ],
 
-    []
+    [currentTerm]
   );
 
   //column definitions...
@@ -183,23 +243,23 @@ const StudentClassReport = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={() => ({
-              backgroundColor: "#ede7f6",
+              backgroundColor: '#ede7f6',
 
-              borderRadius: "4px",
+              borderRadius: '4px',
 
-              display: "flex",
+              display: 'flex',
 
               flexDirection: {
-                xs: "column",
+                xs: 'column',
 
-                lg: "row",
+                lg: 'row',
               },
 
-              gap: "1rem",
+              gap: '1rem',
 
-              justifyContent: "space-between",
+              justifyContent: 'space-between',
 
-              p: "1.5rem 0",
+              p: '1.5rem 0',
             })}
           >
             <Box>
@@ -208,7 +268,7 @@ const StudentClassReport = () => {
                   title="Select a Class"
                   name="grade"
                   id="grade-select"
-                  value={selectedGrade ?? ""}
+                  value={selectedGrade ?? ''}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-10 py-2 appearance-none dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
@@ -258,9 +318,9 @@ const StudentClassReport = () => {
           muiToolbarAlertBannerProps={
             isError
               ? {
-                  color: "error",
+                  color: 'error',
 
-                  children: "Error loading data",
+                  children: 'Error loading data',
                 }
               : undefined
           }
@@ -297,29 +357,29 @@ const StudentClassReport = () => {
           renderDetailPanel={({ row }) => (
             <Box
               sx={{
-                display: "grid",
+                display: 'grid',
 
-                margin: "auto",
+                margin: 'auto',
 
-                gridTemplateColumns: "1fr",
+                gridTemplateColumns: '1fr',
 
-                width: "100%",
+                width: '100%',
               }}
             >
               <Typography>
-                Tuition Fee:{" "}
+                Tuition Fee:{' '}
                 {KES.format(row.original?.StudentTermFee[0]?.tuition_fee ?? 0)}
               </Typography>
               <Typography>
-                Bus Fee:{" "}
+                Bus Fee:{' '}
                 {KES.format(row.original?.StudentTermFee[0]?.bus_fee ?? 0)}
               </Typography>
               <Typography>
-                Boarding Fee:{" "}
+                Boarding Fee:{' '}
                 {KES.format(row.original?.StudentTermFee[0]?.boarding_fee ?? 0)}
               </Typography>
               <Typography>
-                Food Fee:{" "}
+                Food Fee:{' '}
                 {KES.format(row.original?.StudentTermFee[0]?.food_fee ?? 0)}
               </Typography>
               <Typography>Status: {row.original?.status}</Typography>
@@ -328,16 +388,16 @@ const StudentClassReport = () => {
           {...(tableInstanceRef.current && (
             <Toolbar
               sx={{
-                display: "flex",
+                display: 'flex',
 
-                justifyContent: "center",
+                justifyContent: 'center',
 
-                flexDirection: "column",
+                flexDirection: 'column',
               }}
             >
               <Box
                 className="place-items-center"
-                sx={{ display: "grid", width: "100%" }}
+                sx={{ display: 'grid', width: '100%' }}
               >
                 <Pagination
                   variant="outlined"
@@ -360,16 +420,16 @@ const StudentClassReport = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={{
-              display: "flex",
+              display: 'flex',
 
-              justifyContent: "center",
+              justifyContent: 'center',
 
-              flexDirection: "column",
+              flexDirection: 'column',
             }}
           >
             <Box
               className="place-items-center"
-              sx={{ display: "grid", width: "100%" }}
+              sx={{ display: 'grid', width: '100%' }}
             >
               <Pagination
                 variant="outlined"
