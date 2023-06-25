@@ -1,11 +1,11 @@
-import { Button, Label, Modal, Radio, Select, TextInput } from "flowbite-react";
-import React, { useEffect, useMemo } from "react";
-import { useForm, Controller, set } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import "react-datepicker/dist/react-datepicker.css";
+import { Button, Label, Modal, Radio, Select, TextInput } from 'flowbite-react';
+import React, { useEffect, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const PaymentCreate = ({
   onClose,
@@ -14,16 +14,16 @@ const PaymentCreate = ({
   setShowErrorToast,
   setShowSuccessToast,
 }) => {
-  const [paymentMode, setPaymentMode] = React.useState("Cash");
+  const [paymentMode, setPaymentMode] = React.useState('Cash');
   const FormSchema = z.object({
-    termId: z.string().min(1, "Select a term"),
-    classId: z.string().min(1, "Select a class"),
-    studentId: z.string().min(1, "Select a student"),
+    termId: z.string().min(1, 'Select a term'),
+    classId: z.string().min(1, 'Select a class'),
+    studentId: z.string().min(1, 'Select a student'),
     amount: z.number().refine((value) => value >= 0, {
-      message: "Amount total must be a non-negative number",
+      message: 'Amount total must be a non-negative number',
     }),
-    reference: z.string().min(1, "Enter reference"),
-    payment_mode: z.enum(["MPESA", "CASH", "BANK", "CHEQUE"]),
+    reference: z.string().min(1, 'Enter reference'),
+    payment_mode: z.enum(['MPESA', 'CASH', 'BANK', 'CHEQUE']),
   });
 
   const {
@@ -35,19 +35,19 @@ const PaymentCreate = ({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(FormSchema),
-    reValidateMode: "onChange",
+    reValidateMode: 'onChange',
   });
   const queryClient = useQueryClient();
 
   // reset form
   useEffect(() => {
     reset({
-      termId: "",
-      classId: "",
-      studentId: "",
-      amount: "",
-      reference: "",
-      payment_mode: "MPESA",
+      termId: '',
+      classId: '',
+      studentId: '',
+      amount: '',
+      reference: '',
+      payment_mode: 'MPESA',
     });
   }, [reset]);
 
@@ -59,10 +59,10 @@ const PaymentCreate = ({
       );
       return response.data.student;
     } catch (error) {
-      throw new Error("Error fetching students data");
+      throw new Error('Error fetching students data');
     }
   };
-  const { data: studentsList } = useQuery(["stud-data"], fetchStudentsList, {
+  const { data: studentsList } = useQuery(['stud-data'], fetchStudentsList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
   // fetch classes
@@ -73,10 +73,10 @@ const PaymentCreate = ({
       );
       return response.data.grade;
     } catch (error) {
-      throw new Error("Error fetching class data");
+      throw new Error('Error fetching class data');
     }
   };
-  const { data: classList } = useQuery(["clas-data"], fetchClassList, {
+  const { data: classList } = useQuery(['clas-data'], fetchClassList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
   //   fetch terms
@@ -87,10 +87,10 @@ const PaymentCreate = ({
       );
       return response.data.term;
     } catch (error) {
-      throw new Error("Error fetching term data");
+      throw new Error('Error fetching term data');
     }
   };
-  const { data: termList } = useQuery(["temr-data"], fetchTermList, {
+  const { data: termList } = useQuery(['temr-data'], fetchTermList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
@@ -103,7 +103,7 @@ const PaymentCreate = ({
     {
       onSuccess: () => {
         setShowSuccessToast(true);
-        queryClient.invalidateQueries(["payments-data"]);
+        queryClient.invalidateQueries(['payments-data']);
         onClose();
       },
       onError: () => {
@@ -111,9 +111,9 @@ const PaymentCreate = ({
       },
     }
   );
-  const classId = watch("classId") ?? "0";
-  const studentId = watch("studentId") ?? "0";
-  const termId = watch("termId") ?? "0";
+  const classId = watch('classId') ?? '0';
+  const studentId = watch('studentId') ?? '0';
+  const termId = watch('termId') ?? '0';
 
   // set classId when student is selected
   const selectedClass = useMemo(() => {
@@ -122,7 +122,7 @@ const PaymentCreate = ({
     });
 
     if (selectedStudent) {
-      setValue("classId", `${selectedStudent.classId}`);
+      setValue('classId', `${selectedStudent.classId}`, { shouldDirty: true });
     }
   }, [studentsList, studentId, setValue]);
 
@@ -155,7 +155,7 @@ const PaymentCreate = ({
                 <Label
                   htmlFor="studentId"
                   value="Student"
-                  color={`${errors.studentId ? "failure" : "gray"}`}
+                  color={`${errors.studentId ? 'failure' : 'gray'}`}
                 />
               </div>
               <Controller
@@ -166,12 +166,12 @@ const PaymentCreate = ({
                     <Select
                       id="studentId"
                       value={field.value}
-                      color={`${errors.studentId ? "failure" : "gray"}`}
+                      color={`${errors.studentId ? 'failure' : 'gray'}`}
                       required={true}
                       helperText={errors.studentId?.message}
                       {...field}
                     >
-                      <option value={0} disabled>
+                      <option value="" disabled>
                         Select Student
                       </option>
                       {studentsList?.map((option) => (
@@ -190,7 +190,7 @@ const PaymentCreate = ({
                   <Label
                     htmlFor="classId"
                     value="Class"
-                    color={`${errors.classId ? "failure" : "gray"}`}
+                    color={`${errors.classId ? 'failure' : 'gray'}`}
                   />
                 </div>
                 <Controller
@@ -202,7 +202,7 @@ const PaymentCreate = ({
                       <Select
                         id="classId"
                         value={field.value}
-                        color={`${errors.classId ? "failure" : "gray"}`}
+                        color={`${errors.classId ? 'failure' : 'gray'}`}
                         required={true}
                         helperText={errors.classId?.message}
                         {...field}
@@ -225,7 +225,7 @@ const PaymentCreate = ({
                   <Label
                     htmlFor="termId"
                     value="Term"
-                    color={`${errors.termId ? "failure" : "gray"}`}
+                    color={`${errors.termId ? 'failure' : 'gray'}`}
                   />
                 </div>
                 <Controller
@@ -238,7 +238,7 @@ const PaymentCreate = ({
                         value={termList?.find(
                           (term) => term?.id === field?.value
                         )}
-                        color={`${errors.termId ? "failure" : "gray"}`}
+                        color={`${errors.termId ? 'failure' : 'gray'}`}
                         required={true}
                         helperText={errors.termId?.message}
                         {...field}
@@ -265,13 +265,13 @@ const PaymentCreate = ({
               <Label
                 htmlFor="payment_mode"
                 value="Payment Mode"
-                color={`${errors.payment_mode ? "failure" : "gray"}`}
+                color={`${errors.payment_mode ? 'failure' : 'gray'}`}
               />
               <div className="py-3 grid grid-cols-2 gap-2">
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "MPESA" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'MPESA' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -280,8 +280,8 @@ const PaymentCreate = ({
                       value="MPESA"
                       defaultChecked={true}
                       onChange={() => {
-                        setPaymentMode("MPESA");
-                        setValue("payment_mode", "MPESA");
+                        setPaymentMode('MPESA');
+                        setValue('payment_mode', 'MPESA');
                       }}
                       className="text-sm"
                     />
@@ -293,7 +293,7 @@ const PaymentCreate = ({
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "BANK" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'BANK' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -302,8 +302,8 @@ const PaymentCreate = ({
                       value="BANK"
                       defaultChecked={false}
                       onChange={() => {
-                        setPaymentMode("BANK");
-                        setValue("payment_mode", "BANK");
+                        setPaymentMode('BANK');
+                        setValue('payment_mode', 'BANK');
                       }}
                       className="text-sm"
                     />
@@ -315,7 +315,7 @@ const PaymentCreate = ({
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "CASH" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'CASH' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -324,8 +324,8 @@ const PaymentCreate = ({
                       value="CASH"
                       defaultChecked={false}
                       onChange={() => {
-                        setPaymentMode("CASH");
-                        setValue("payment_mode", "CASH");
+                        setPaymentMode('CASH');
+                        setValue('payment_mode', 'CASH');
                       }}
                       className="text-sm"
                     />
@@ -337,7 +337,7 @@ const PaymentCreate = ({
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "CHEQUE" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'CHEQUE' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -346,8 +346,8 @@ const PaymentCreate = ({
                       value="CHEQUE"
                       defaultChecked={false}
                       onChange={() => {
-                        setPaymentMode("CHEQUE");
-                        setValue("payment_mode", "CHEQUE");
+                        setPaymentMode('CHEQUE');
+                        setValue('payment_mode', 'CHEQUE');
                       }}
                       className="text-sm"
                     />
@@ -364,7 +364,7 @@ const PaymentCreate = ({
                 <Label
                   htmlFor="amount"
                   value="Amount"
-                  color={errors.amount ? "failure" : "gray"}
+                  color={errors.amount ? 'failure' : 'gray'}
                 />
               </div>
               <Controller
@@ -377,7 +377,7 @@ const PaymentCreate = ({
                     type="number"
                     placeholder="Amount"
                     required={true}
-                    color={errors.amount ? "failure" : "gray"}
+                    color={errors.amount ? 'failure' : 'gray'}
                     helperText={errors.amount?.message}
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.valueAsNumber)}
@@ -390,7 +390,7 @@ const PaymentCreate = ({
                 <Label
                   htmlFor="reference"
                   value="Reference"
-                  color={errors.reference ? "failure" : "gray"}
+                  color={errors.reference ? 'failure' : 'gray'}
                 />
               </div>
               <Controller
@@ -402,7 +402,7 @@ const PaymentCreate = ({
                     id="reference"
                     placeholder="Reference"
                     required={true}
-                    color={errors.reference ? "failure" : "gray"}
+                    color={errors.reference ? 'failure' : 'gray'}
                     helperText={errors.reference?.message}
                     {...field}
                   />
