@@ -136,7 +136,7 @@ function SettingsCard() {
           )}
         </div>
       </Suspense>
-      <DatabaseActions />
+      {/* <DatabaseActions /> */}
     </>
   );
 }
