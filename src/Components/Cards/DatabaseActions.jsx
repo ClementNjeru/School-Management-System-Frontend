@@ -8,10 +8,12 @@ import {
   DialogContent,
   TextField,
 } from '@mui/material';
-import { useGetFromStore } from '@/utils/hooks/zustantHooks';
+
+import { useIsAuthenticated } from '../../utils/hooks/localstorage';
 
 const DatabaseActions = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const { userId } = useIsAuthenticated();
+
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [action, setAction] =
@@ -44,7 +46,7 @@ const DatabaseActions = () => {
   const resetDatabase = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-database?userId=`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-database?userId=${userId}`,
         {
           method: 'POST',
         }
@@ -58,7 +60,7 @@ const DatabaseActions = () => {
   const partialResetDatabase = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/partial-reset-database?userId=`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/partial-reset-database?userId=${userId}`,
         {
           method: 'POST',
         }
@@ -72,7 +74,7 @@ const DatabaseActions = () => {
   const resetReservations = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-reservation-data?userId=`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-reservation-data?userId=${userId}`,
         {
           method: 'POST',
         }
