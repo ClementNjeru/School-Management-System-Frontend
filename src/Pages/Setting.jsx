@@ -61,76 +61,83 @@ function SettingsCard() {
   }, [showSuccessToast, showErrorToast]);
 
   return (
-    <Suspense fallback={<SkeletonLoader />}>
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-lg font-semibold mb-4">School Information</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-gray-600">School Name</label>
-            <p className="text-gray-800">{data && data.school?.name}</p>
+    <>
+      <Suspense fallback={<SkeletonLoader />}>
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold mb-4">School Information</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-gray-600">School Name</label>
+              <p className="text-gray-800">{data && data.school?.name}</p>
+            </div>
+            <div>
+              <label className="text-gray-600">Email</label>
+              <p className="text-gray-800">{data && data.school?.email}</p>
+            </div>
+            <div>
+              <label className="text-gray-600">Phone</label>
+              <p className="text-gray-800">{data && data.school?.phone}</p>
+            </div>
+            <div>
+              <label className="text-gray-600">Address</label>
+              <p className="text-gray-800">{data && data.school?.address}</p>
+            </div>
+            <div>
+              <label className="text-gray-600">Address 2</label>
+              <p className="text-gray-800">{data && data.school?.address2}</p>
+            </div>
+            <div>
+              <label className="text-gray-600">Town</label>
+              <p className="text-gray-800">{data && data.school?.town}</p>
+            </div>
+            <div className="col-span-2">
+              <label className="text-gray-600">School Motto</label>
+              <p className="text-gray-800">
+                {data && data.school?.school_motto}
+              </p>
+            </div>
           </div>
-          <div>
-            <label className="text-gray-600">Email</label>
-            <p className="text-gray-800">{data && data.school?.email}</p>
-          </div>
-          <div>
-            <label className="text-gray-600">Phone</label>
-            <p className="text-gray-800">{data && data.school?.phone}</p>
-          </div>
-          <div>
-            <label className="text-gray-600">Address</label>
-            <p className="text-gray-800">{data && data.school?.address}</p>
-          </div>
-          <div>
-            <label className="text-gray-600">Address 2</label>
-            <p className="text-gray-800">{data && data.school?.address2}</p>
-          </div>
-          <div>
-            <label className="text-gray-600">Town</label>
-            <p className="text-gray-800">{data && data.school?.town}</p>
-          </div>
-          <div className="col-span-2">
-            <label className="text-gray-600">School Motto</label>
-            <p className="text-gray-800">{data && data.school?.school_motto}</p>
-          </div>
+          <button
+            className="mt-6 bg-purple-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-purple-600"
+            onClick={() => {
+              setUpdateModalOpen(true);
+            }}
+          >
+            Edit Information
+          </button>
+          <SchoolUpdate
+            open={updateModalOpen}
+            setShowSuccessToast={setShowSuccessToast}
+            setShowErrorToast={setShowErrorToast}
+            onClose={() => setUpdateModalOpen(false)}
+            objData={data && data?.school}
+          />
+          {showSuccessToast && (
+            <Toast className="absolute bottom-4 left-4">
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
+                <HiCheck className="h-5 w-5" />
+              </div>
+              <div className="ml-3 text-sm font-normal">
+                Data Updated Success.
+              </div>
+              <Toast.Toggle onClick={() => setShowSuccessToast(false)} />
+            </Toast>
+          )}
+          {showErrorToast && (
+            <Toast className="absolute bottom-4 left-4">
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
+                <IoMdClose className="h-5 w-5" />
+              </div>
+              <div className="ml-3 text-sm font-normal">
+                Data update failed.
+              </div>
+              <Toast.Toggle onClick={() => setShowErrorToast(false)} />
+            </Toast>
+          )}
         </div>
-        <button
-          className="mt-6 bg-purple-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-purple-600"
-          onClick={() => {
-            setUpdateModalOpen(true);
-          }}
-        >
-          Edit Information
-        </button>
-        <SchoolUpdate
-          open={updateModalOpen}
-          setShowSuccessToast={setShowSuccessToast}
-          setShowErrorToast={setShowErrorToast}
-          onClose={() => setUpdateModalOpen(false)}
-          objData={data && data?.school}
-        />
-        {showSuccessToast && (
-          <Toast className="absolute bottom-4 left-4">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
-              <HiCheck className="h-5 w-5" />
-            </div>
-            <div className="ml-3 text-sm font-normal">
-              Data Updated Success.
-            </div>
-            <Toast.Toggle onClick={() => setShowSuccessToast(false)} />
-          </Toast>
-        )}
-        {showErrorToast && (
-          <Toast className="absolute bottom-4 left-4">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-              <IoMdClose className="h-5 w-5" />
-            </div>
-            <div className="ml-3 text-sm font-normal">Data update failed.</div>
-            <Toast.Toggle onClick={() => setShowErrorToast(false)} />
-          </Toast>
-        )}
-      </div>
-    </Suspense>
+      </Suspense>
+      <DatabaseActions />
+    </>
   );
 }
 
@@ -204,7 +211,6 @@ function SkeletonLoader() {
       >
         Loading...
       </button>
-      <DatabaseActions />
     </div>
   );
 }
