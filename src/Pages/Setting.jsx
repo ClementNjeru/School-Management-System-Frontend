@@ -1,10 +1,11 @@
-import React, { Suspense, useEffect, useState } from "react";
-import SchoolUpdate from "../Components/modals/SchoolUpdate";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-import { HiCheck } from "react-icons/hi";
-import { IoMdClose } from "react-icons/io";
-import { Toast } from "flowbite-react";
+import React, { Suspense, useEffect, useState } from 'react';
+import SchoolUpdate from '../Components/modals/SchoolUpdate';
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import { HiCheck } from 'react-icons/hi';
+import { IoMdClose } from 'react-icons/io';
+import { Toast } from 'flowbite-react';
+import DatabaseActions from '../Components/Cards/DatabaseActions';
 const Setting = () => {
   return (
     <div className="flex flex-col gap-3">
@@ -30,11 +31,11 @@ function SettingsCard() {
         school: schoolResponse?.data,
       };
     } catch (error) {
-      throw new Error("Error fetching data");
+      throw new Error('Error fetching data');
     }
   };
 
-  const { data } = useQuery(["school-data"], fetchData);
+  const { data } = useQuery(['school-data'], fetchData);
   // reset toast
 
   useEffect(() => {
@@ -203,6 +204,7 @@ function SkeletonLoader() {
       >
         Loading...
       </button>
+      <DatabaseActions />
     </div>
   );
 }
