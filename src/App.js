@@ -1,23 +1,21 @@
-import React, { Suspense } from "react";
-import Layout from "./Components/Layout";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
-import "./index.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Dashboard from "./Pages/Dashboard";
-import Login from "./Pages/Login";
-import ErrorBoundary from "./Components/ErrorBoundary/ErrorBoundary";
-import { ThemeProvider } from "./context/ThemeContext";
-const Student = React.lazy(() => import("./Pages/Student"));
-const Teacher = React.lazy(() => import("./Pages/Teacher"));
-const Guardian = React.lazy(() => import("./Pages/Guardian"));
-const User = React.lazy(() => import("./Pages/User"));
-const Class = React.lazy(() => import("./Pages/Class"));
-const School = React.lazy(() => import("./Pages/Setting"));
-const Payment = React.lazy(() => import("./Pages/Payment"));
-const Calendar = React.lazy(() => import("./Pages/Calendar"));
-const AdditionalPayment = React.lazy(() => import("./Pages/AdditionalPayment"));
+import React, { Suspense } from 'react';
+import Layout from './Components/Layout';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import './index.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Dashboard from './Pages/Dashboard';
+import Login from './Pages/Login';
+import ErrorBoundary from './Components/ErrorBoundary/ErrorBoundary';
+import { ThemeProvider } from './context/ThemeContext';
+const Student = React.lazy(() => import('./Pages/Student'));
+const Teacher = React.lazy(() => import('./Pages/Teacher'));
+const User = React.lazy(() => import('./Pages/User'));
+const Class = React.lazy(() => import('./Pages/Class'));
+const School = React.lazy(() => import('./Pages/Setting'));
+const Payment = React.lazy(() => import('./Pages/Payment'));
+const Calendar = React.lazy(() => import('./Pages/Calendar'));
 const StudentClassReport = React.lazy(() =>
-  import("./Pages/Reports/ClassReport")
+  import('./Pages/Reports/ClassReport')
 );
 
 // Create a client
@@ -63,14 +61,7 @@ function App() {
                     </Layout>
                   }
                 />
-                <Route
-                  path="/guardians"
-                  element={
-                    <Layout>
-                      <Guardian />
-                    </Layout>
-                  }
-                />
+
                 <Route
                   path="/users"
                   element={
@@ -84,14 +75,6 @@ function App() {
                   element={
                     <Layout>
                       <Payment />
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/additional-payments"
-                  element={
-                    <Layout>
-                      <AdditionalPayment />
                     </Layout>
                   }
                 />
