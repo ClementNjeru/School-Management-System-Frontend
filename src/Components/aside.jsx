@@ -1,30 +1,30 @@
-import { Avatar, Button, Sidebar, ToggleSwitch } from "flowbite-react";
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { Avatar, Button, Sidebar, ToggleSwitch } from 'flowbite-react';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
-import stud from "./svg/stud";
-import dash from "./svg/dash";
-import usericon from "./svg/usericon";
-import guardicon from "./svg/guardicon";
-import gearicon from "./svg/gearicon";
-import reporticon from "./svg/reporticon";
-import payicon from "./svg/payicon";
-import classicon from "./svg/classicon";
-import teachericon from "./svg/teachericon";
-import { CiLogout } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
-import { useIsAuthenticated } from "../utils/hooks/localstorage";
-import { ThemeContext } from "../context/ThemeContext";
+import stud from './svg/stud';
+import dash from './svg/dash';
+import usericon from './svg/usericon';
+
+import gearicon from './svg/gearicon';
+import reporticon from './svg/reporticon';
+import payicon from './svg/payicon';
+import classicon from './svg/classicon';
+import teachericon from './svg/teachericon';
+import { CiLogout } from 'react-icons/ci';
+import { useNavigate } from 'react-router-dom';
+import { useIsAuthenticated } from '../utils/hooks/localstorage';
+import { ThemeContext } from '../context/ThemeContext';
 const Aside = () => {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useContext(ThemeContext);
   const { isAuthenticated, expiresAt, name, role } = useIsAuthenticated();
 
   const initials = name
-    ?.split(" ")
+    ?.split(' ')
     .map((namePart) => namePart.charAt(0))
-    .join("");
+    .join('');
 
   useEffect(() => {
     let sessionTimeout;
@@ -34,8 +34,8 @@ const Aside = () => {
       const remainingTime = expiresAt - Date.now();
       // logout the user if the remaining time is less than 10 seconds
       if (remainingTime < 10000) {
-        localStorage.removeItem("authObject");
-        navigate("/");
+        localStorage.removeItem('authObject');
+        navigate('/');
       }
     }
 
@@ -46,16 +46,16 @@ const Aside = () => {
   }, [isAuthenticated, navigate, expiresAt]);
 
   function signOutUser() {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("authObject");
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authObject');
     }
-    navigate("/");
+    navigate('/');
   }
 
   return (
     <section
       className={`w-fit h-screen flex shadow-md  rounded-none flex-col ${
-        isDark ? "dark bg-gray-800" : ""
+        isDark ? 'dark bg-gray-800' : ''
       }`}
     >
       <Sidebar aria-label="Sidebar Menu" className="rounded-none">
@@ -80,16 +80,10 @@ const Aside = () => {
               Students
             </Sidebar.Item>
 
-            <Sidebar.Item as={Link} to="/guardians" icon={guardicon}>
-              Guardians
-            </Sidebar.Item>
-
             <Sidebar.Item as={Link} to="/payments" icon={payicon}>
               Payments
             </Sidebar.Item>
-            <Sidebar.Item as={Link} to="/additional-payments" icon={payicon}>
-              Additional Payments
-            </Sidebar.Item>
+
             <Sidebar.Collapse label="Reports" icon={reporticon}>
               <Sidebar.Item as={Link} to="/studentclassreport">
                 Class Report
@@ -111,7 +105,7 @@ const Aside = () => {
         </Sidebar.Items>
         <Sidebar.ItemGroup>
           <ToggleSwitch
-            label={!isDark ? "Light Mode" : "Dark Mode"}
+            label={!isDark ? 'Light Mode' : 'Dark Mode'}
             checked={isDark}
             onChange={toggleTheme}
             className="my-4 mx-2 mb-auto"
@@ -120,7 +114,7 @@ const Aside = () => {
           </ToggleSwitch>
           <div
             className={`flex flex-col justify-center w-full px-2 py-4 ${
-              isDark ? "text-gray-400" : "text-gray-500"
+              isDark ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
             <div className="flex items-end  pb-6 w-full ">

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import TermUpdate from "../Components/modals/TermUpdate";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Toast } from "flowbite-react";
-import { HiCheck } from "react-icons/hi";
-import { IoMdClose } from "react-icons/io";
+import React, { useEffect, useState } from 'react';
+
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { Toast } from 'flowbite-react';
+import { HiCheck } from 'react-icons/hi';
+import { IoMdClose } from 'react-icons/io';
 const Setting = () => {
   return (
     <div className="flex flex-col gap-3">
@@ -32,11 +32,11 @@ function TermCard() {
         term: termResponse?.data?.term,
       };
     } catch (error) {
-      throw new Error("Error fetching data");
+      throw new Error('Error fetching data');
     }
   };
 
-  const { data } = useQuery(["terms-data"], fetchData);
+  const { data } = useQuery(['terms-data'], fetchData);
   // reset toast
 
   useEffect(() => {
@@ -62,7 +62,7 @@ function TermCard() {
   }, [showSuccessToast, showErrorToast]);
   return (
     <>
-      {Array.isArray(data?.term) ? (
+      {/* {Array.isArray(data?.term) ? (
         data?.term?.map((term) => (
           <div key={term.id} className="bg-white rounded-lg shadow-md p-6 mb-4">
             <h2 className="text-lg font-semibold mb-4">Term Information</h2>
@@ -74,13 +74,13 @@ function TermCard() {
               <div>
                 <label className="text-gray-600">Start Date</label>
                 <p className="text-gray-800">
-                  {format(new Date(term.startDate), "yyyy-MM-dd")}
+                  {format(new Date(term.startDate), 'yyyy-MM-dd')}
                 </p>
               </div>
               <div>
                 <label className="text-gray-600">End Date</label>
                 <p className="text-gray-800">
-                  {format(new Date(term.endDate), "yyyy-MM-dd")}
+                  {format(new Date(term.endDate), 'yyyy-MM-dd')}
                 </p>
               </div>
             </div>
@@ -93,18 +93,11 @@ function TermCard() {
             >
               Edit Term
             </button>
-            <TermUpdate
-              open={updateModalOpen}
-              setShowSuccessToast={setShowSuccessToast}
-              setShowErrorToast={setShowErrorToast}
-              onClose={() => setUpdateModalOpen(false)}
-              objData={selectedData}
-            />
           </div>
         ))
       ) : (
         <div className="bg-white rounded-lg shadow-md p-6 mb-4">no data</div>
-      )}
+      )} */}
       {showSuccessToast && (
         <Toast className="absolute bottom-4 left-4">
           <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
