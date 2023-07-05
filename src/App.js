@@ -13,7 +13,6 @@ const User = React.lazy(() => import('./Pages/User'));
 const Class = React.lazy(() => import('./Pages/Class'));
 const School = React.lazy(() => import('./Pages/Setting'));
 const Payment = React.lazy(() => import('./Pages/Payment'));
-const Calendar = React.lazy(() => import('./Pages/Calendar'));
 const StudentClassReport = React.lazy(() =>
   import('./Pages/Reports/ClassReport')
 );
@@ -87,14 +86,7 @@ function App() {
                     </Layout>
                   }
                 />
-                <Route
-                  path="/calendar"
-                  element={
-                    <Layout>
-                      <Calendar />
-                    </Layout>
-                  }
-                />
+
                 <Route
                   path="/studentclassreport"
                   element={
