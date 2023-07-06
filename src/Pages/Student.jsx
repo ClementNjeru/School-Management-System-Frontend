@@ -4,17 +4,17 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import { HiCheck } from "react-icons/hi";
-import { IoMdClose } from "react-icons/io";
+} from 'react';
+import { HiCheck } from 'react-icons/hi';
+import { IoMdClose } from 'react-icons/io';
 import MaterialReactTable, {
   MRT_FullScreenToggleButton,
   MRT_GlobalFilterTextField,
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
-} from "material-react-table";
-import { format } from "date-fns";
+} from 'material-react-table';
+import { format } from 'date-fns';
 
 import {
   Box,
@@ -28,18 +28,18 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-} from "@mui/material";
+} from '@mui/material';
 
-import RefreshIcon from "@mui/icons-material/Refresh";
-import { Delete, Edit } from "@mui/icons-material";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Toast } from "flowbite-react";
-import StudentCreate from "../Components/modals/StudentCreate";
-import axios from "axios";
-import StudentUpdate from "../Components/modals/StudentUpdate";
-const KES = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "KES",
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { Delete, Edit } from '@mui/icons-material';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, Toast } from 'flowbite-react';
+import StudentCreate from '../Components/modals/StudentCreate';
+import axios from 'axios';
+import StudentUpdate from '../Components/modals/StudentUpdate';
+const KES = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'KES',
 });
 
 const Student = () => {
@@ -47,7 +47,7 @@ const Student = () => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
   const tableInstanceRef = useRef(null);
   const [sorting, setSorting] = useState([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -68,10 +68,10 @@ const Student = () => {
       );
       return response.data?.items;
     } catch (error) {
-      throw new Error("Error fetching term data");
+      throw new Error('Error fetching term data');
     }
   };
-  const { data: termList } = useQuery(["term-data"], fetchTermList, {
+  const { data: termList } = useQuery(['term-data'], fetchTermList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
@@ -97,7 +97,7 @@ const Student = () => {
 
   const { data, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
-      "students-data",
+      'students-data',
 
       columnFilters, //refetch when columnFilters changes
 
@@ -114,20 +114,20 @@ const Student = () => {
       const fetchURL = new URL(`${process.env.REACT_APP_BASE_URL}/students`);
 
       fetchURL.searchParams.set(
-        "start",
+        'start',
 
         `${pagination.pageIndex * pagination.pageSize}`
       );
 
-      fetchURL.searchParams.set("size", `${pagination.pageSize}`);
+      fetchURL.searchParams.set('size', `${pagination.pageSize}`);
 
-      fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
+      fetchURL.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
 
       if (globalFilter) {
         fetchURL.pathname = `/api/students/search/${globalFilter}`;
       }
 
-      fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+      fetchURL.searchParams.set('sorting', JSON.stringify(sorting ?? []));
 
       const response = await fetch(fetchURL.href);
 
@@ -145,55 +145,55 @@ const Student = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
+        accessorKey: 'id',
 
-        header: "Id",
+        header: 'Id',
       },
       {
-        accessorKey: "first_name",
+        accessorKey: 'first_name',
 
-        header: "First Name",
-      },
-
-      {
-        accessorKey: "last_name",
-
-        header: "Last Name",
+        header: 'First Name',
       },
 
       {
-        accessorKey: "dob",
+        accessorKey: 'last_name',
 
-        header: "DOB",
+        header: 'Last Name',
+      },
+
+      {
+        accessorKey: 'dob',
+
+        header: 'DOB',
         Cell: ({ cell }) => {
           const dateTime = cell.getValue?.();
-          return dateTime ? format(new Date(dateTime), "yyyy-MM-dd") : "";
+          return dateTime ? format(new Date(dateTime), 'yyyy-MM-dd') : '';
         },
       },
       {
-        accessorKey: "Class.name",
+        accessorKey: 'Class.name',
 
-        header: "Class",
+        header: 'Class',
       },
       {
-        accessorKey: "StudentTermFee[0].total_fee",
+        accessorKey: 'StudentTermFee[0].total_fee',
 
-        header: "Total Fee",
+        header: 'Total Fee',
         size: 50,
         Cell: ({ row }) => {
           const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
           const totalFee = studentTermFee
-            ? currentTerm === "Term 1"
+            ? currentTerm === 'Term 1'
               ? Number(studentTermFee.term_one_fee) +
                 Number(studentTermFee.bus_fee) +
                 Number(studentTermFee.boarding_fee) +
                 Number(studentTermFee.food_fee)
-              : currentTerm === "Term 2"
+              : currentTerm === 'Term 2'
               ? Number(studentTermFee.term_two_fee) +
                 Number(studentTermFee.bus_fee) +
                 Number(studentTermFee.boarding_fee) +
                 Number(studentTermFee.food_fee)
-              : currentTerm === "Term 3"
+              : currentTerm === 'Term 3'
               ? Number(studentTermFee.term_three_fee) +
                 Number(studentTermFee.bus_fee) +
                 Number(studentTermFee.boarding_fee) +
@@ -206,18 +206,18 @@ const Student = () => {
       },
 
       {
-        accessorKey: "StudentTermFee[0]",
+        accessorKey: 'StudentTermFee[0]',
 
-        header: "Fee Balance",
+        header: 'Fee Balance',
         size: 50,
         Cell: ({ row }) => {
           const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
           const balance = studentTermFee
-            ? currentTerm === "Term 1"
+            ? currentTerm === 'Term 1'
               ? Number(studentTermFee.term_one_balance)
-              : currentTerm === "Term 2"
+              : currentTerm === 'Term 2'
               ? Number(studentTermFee.term_two_balance)
-              : currentTerm === "Term 3"
+              : currentTerm === 'Term 3'
               ? Number(studentTermFee.term_three_balance)
               : 0
             : 0;
@@ -234,7 +234,7 @@ const Student = () => {
     return axios
       .delete(`${process.env.REACT_APP_BASE_URL}/student/${id}`)
       .then(() => {
-        queryClient.invalidateQueries(["guest-data"]);
+        queryClient.invalidateQueries(['guest-data']);
         setShowSuccessToast(true);
         refetch();
       })
@@ -254,7 +254,7 @@ const Student = () => {
   };
   const handleConfirmDelete = () => {
     if (rowToDelete) {
-      deletePost.mutate(rowToDelete.getValue("id"));
+      deletePost.mutate(rowToDelete.getValue('id'));
       tableData.splice(rowToDelete.index, 1);
     }
     setOpenConfirmDialog(false);
@@ -293,23 +293,23 @@ const Student = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={() => ({
-              backgroundColor: "#ede7f6",
+              backgroundColor: '#ede7f6',
 
-              borderRadius: "4px",
+              borderRadius: '4px',
 
-              display: "flex",
+              display: 'flex',
 
               flexDirection: {
-                xs: "column",
+                xs: 'column',
 
-                lg: "row",
+                lg: 'row',
               },
 
-              gap: "1rem",
+              gap: '1rem',
 
-              justifyContent: "space-between",
+              justifyContent: 'space-between',
 
-              p: "1.5rem 0",
+              p: '1.5rem 0',
             })}
           >
             <Box className="gap-3 flex items-center">
@@ -351,9 +351,9 @@ const Student = () => {
           muiToolbarAlertBannerProps={
             isError
               ? {
-                  color: "error",
+                  color: 'error',
 
-                  children: "Error loading data",
+                  children: 'Error loading data',
                 }
               : undefined
           }
@@ -371,7 +371,7 @@ const Student = () => {
             </>
           )}
           renderRowActions={({ row }) => (
-            <Box sx={{ display: "flex", gap: "1rem" }}>
+            <Box sx={{ display: 'flex', gap: '1rem' }}>
               <Tooltip arrow placement="left" title="Edit">
                 <IconButton
                   onClick={() => {
@@ -407,63 +407,19 @@ const Student = () => {
 
             sorting,
           }}
-          renderDetailPanel={({ row }) => (
-            <Box
-              sx={{
-                display: "grid",
-
-                margin: "auto",
-
-                gridTemplateColumns: "1fr",
-
-                width: "100%",
-              }}
-            >
-              <Typography>
-                Tuition Fee:{" "}
-                {currentTerm === "Term 1"
-                  ? KES.format(
-                      row.original?.StudentTermFee[0]?.term_one_fee ?? 0
-                    )
-                  : currentTerm === "Term 2"
-                  ? KES.format(
-                      row.original?.StudentTermFee[0]?.term_two_fee ?? 0
-                    )
-                  : currentTerm === "Term 3"
-                  ? KES.format(
-                      row.original?.StudentTermFee[0]?.term_three_fee ?? 0
-                    )
-                  : KES.format(0)}
-              </Typography>
-
-              <Typography>
-                Bus Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.bus_fee ?? 0)}
-              </Typography>
-              <Typography>
-                Boarding Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.boarding_fee ?? 0)}
-              </Typography>
-              <Typography>
-                Food Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.food_fee ?? 0)}
-              </Typography>
-              <Typography>Status: {row.original?.status}</Typography>
-            </Box>
-          )}
           {...(tableInstanceRef.current && (
             <Toolbar
               sx={{
-                display: "flex",
+                display: 'flex',
 
-                justifyContent: "center",
+                justifyContent: 'center',
 
-                flexDirection: "column",
+                flexDirection: 'column',
               }}
             >
               <Box
                 className="place-items-center"
-                sx={{ display: "grid", width: "100%" }}
+                sx={{ display: 'grid', width: '100%' }}
               >
                 <Pagination
                   variant="outlined"
@@ -486,16 +442,16 @@ const Student = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={{
-              display: "flex",
+              display: 'flex',
 
-              justifyContent: "center",
+              justifyContent: 'center',
 
-              flexDirection: "column",
+              flexDirection: 'column',
             }}
           >
             <Box
               className="place-items-center"
-              sx={{ display: "grid", width: "100%" }}
+              sx={{ display: 'grid', width: '100%' }}
             >
               <Pagination
                 variant="outlined"
@@ -532,7 +488,7 @@ const Student = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{'Confirm Deletion'}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete this guest?

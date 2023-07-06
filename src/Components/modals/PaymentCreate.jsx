@@ -16,7 +16,6 @@ const PaymentCreate = ({
 }) => {
   const [paymentMode, setPaymentMode] = React.useState('Cash');
   const FormSchema = z.object({
-    termId: z.string().min(1, 'Select a term'),
     classId: z.string().min(1, 'Select a class'),
     studentId: z.string().min(1, 'Select a student'),
     amount: z.number().refine((value) => value >= 0, {
@@ -77,20 +76,6 @@ const PaymentCreate = ({
     }
   };
   const { data: classList } = useQuery(['clas-data'], fetchClassList, {
-    cacheTime: 10 * 60 * 1000, // cache for 10 minutes
-  });
-  //   fetch terms
-  const fetchTermList = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/terms/all`
-      );
-      return response.data.term;
-    } catch (error) {
-      throw new Error('Error fetching term data');
-    }
-  };
-  const { data: termList } = useQuery(['temr-data'], fetchTermList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
@@ -184,7 +169,7 @@ const PaymentCreate = ({
                 )}
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className=" gap-3">
               <div>
                 <div className="mb-2 block">
                   <Label
@@ -211,45 +196,6 @@ const PaymentCreate = ({
                           Select Class
                         </option>
                         {classList?.map((option) => (
-                          <option key={option.id} value={option.id}>
-                            {option.name}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
-                  )}
-                />
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <Label
-                    htmlFor="termId"
-                    value="Term"
-                    color={`${errors.termId ? 'failure' : 'gray'}`}
-                  />
-                </div>
-                <Controller
-                  control={control}
-                  name="termId"
-                  render={({ field }) => (
-                    <div>
-                      <Select
-                        id="termId"
-                        value={termList?.find(
-                          (term) => term?.id === field?.value
-                        )}
-                        color={`${errors.termId ? 'failure' : 'gray'}`}
-                        required={true}
-                        helperText={errors.termId?.message}
-                        {...field}
-                        // onChange={(_, value) => {
-                        //   field.onChange(value?.id || 0);
-                        // }}
-                      >
-                        <option value={0} disabled>
-                          Select Term
-                        </option>
-                        {termList?.map((option) => (
                           <option key={option.id} value={option.id}>
                             {option.name}
                           </option>
