@@ -31,7 +31,7 @@ const StudentUpdate = ({
     first_name: z.string().min(2, { message: 'First name is required' }),
     last_name: z.string().min(2, { message: 'Last name is required' }),
     dob: z.date(),
-    amount: z.number().refine((value) => value >= 0, {
+    feeAmount: z.number().refine((value) => value >= 0, {
       message: 'Amount total must be a non-negative number',
     }),
     guardianName: z.string().min(2, { message: 'Last name is required' }),
@@ -66,7 +66,7 @@ const StudentUpdate = ({
       dob: objData?.dob ? new Date(objData.dob) : new Date(),
       classId: objData?.classId ?? 0,
       gender: objData?.gender ?? 'MALE',
-      amount: objData?.amount ?? 0,
+      feeAmount: objData?.feeAmount ?? 0,
       guardianName: objData?.guardianName ?? '',
       guardianPhone: objData?.guardianPhone ?? '',
     });
@@ -330,27 +330,27 @@ const StudentUpdate = ({
                 )}
               />
             </div>
-            {/* Set fee payment amount */}
+            {/* Set fee payment feeAmount */}
             <div>
               <div className="mb-2 block">
                 <Label
-                  htmlFor="amount"
+                  htmlFor="feeAmount"
                   value="Amount"
-                  color={errors.amount ? 'failure' : 'gray'}
+                  color={errors.feeAmount ? 'failure' : 'gray'}
                 />
               </div>
               <Controller
                 control={control}
-                name="amount"
+                name="feeAmount"
                 defaultValue={0}
                 render={({ field }) => (
                   <TextInput
-                    id="amount"
+                    id="feeAmount"
                     type="number"
                     placeholder="Amount"
                     required={true}
-                    color={errors.amount ? 'failure' : 'gray'}
-                    helperText={errors.amount?.message}
+                    color={errors.feeAmount ? 'failure' : 'gray'}
+                    helperText={errors.feeAmount?.message}
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.valueAsNumber)}
                   />
