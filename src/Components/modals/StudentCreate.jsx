@@ -32,6 +32,10 @@ const StudentCreate = ({
     amount: z.number().refine((value) => value >= 0, {
       message: 'Amount total must be a non-negative number',
     }),
+    guardianName: z.string().min(2, { message: 'Last name is required' }),
+    guardianPhone: z
+      .string()
+      .regex(/^(\+?\d{2,3})?0?\d{9}$/, { message: 'Invalid phone number' }),
     gender: z
       .enum(['MALE', 'FEMALE'])
       .refine((value) => value === 'MALE' || value === 'FEMALE', {
@@ -61,6 +65,8 @@ const StudentCreate = ({
       classId: 0,
       gender: 'MALE',
       amount: 0,
+      guardianName: '',
+      guardianPhone: '',
     });
   }, [reset]);
 
@@ -290,6 +296,55 @@ const StudentCreate = ({
                 />
               </div>
             </div>
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="guardianName"
+                  value="Guardian Name"
+                  color={errors.guardianName ? 'failure' : 'gray'}
+                />
+              </div>
+              <Controller
+                control={control}
+                name="guardianName"
+                defaultValue=""
+                render={({ field }) => (
+                  <TextInput
+                    id="guardianName"
+                    placeholder="Guardian name"
+                    required={true}
+                    color={errors.guardianName ? 'failure' : 'gray'}
+                    helperText={errors.guardianName?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="guardianPhone"
+                  value="Guardian Phone"
+                  color={errors.guardianPhone ? 'failure' : 'gray'}
+                />
+              </div>
+              <Controller
+                control={control}
+                name="guardianPhone"
+                defaultValue=""
+                render={({ field }) => (
+                  <TextInput
+                    id="guardianPhone"
+                    placeholder="0700000000"
+                    required={true}
+                    color={errors.guardianPhone ? 'failure' : 'gray'}
+                    helperText={errors.guardianPhone?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+
             {/* Set fee payment amount */}
             <div>
               <div className="mb-2 block">
