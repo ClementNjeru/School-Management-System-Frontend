@@ -41,7 +41,6 @@ const PaymentCreate = ({
   // reset form
   useEffect(() => {
     reset({
-      termId: '',
       classId: '',
       studentId: '',
       amount: '',
@@ -98,7 +97,6 @@ const PaymentCreate = ({
   );
   const classId = watch('classId') ?? '0';
   const studentId = watch('studentId') ?? '0';
-  const termId = watch('termId') ?? '0';
 
   // set classId when student is selected
   const selectedClass = useMemo(() => {
@@ -118,7 +116,6 @@ const PaymentCreate = ({
         ...data,
         classId: Number(classId),
         studentId: Number(studentId),
-        termId: Number(termId),
       };
       createPost.mutate(requestData);
     } catch (error) {
