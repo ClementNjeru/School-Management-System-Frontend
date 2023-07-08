@@ -60,41 +60,6 @@ const Student = () => {
     pageSize: 10,
   });
 
-  // Get current term> school calendar
-  const fetchTermList = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/terms`
-      );
-      return response.data?.items;
-    } catch (error) {
-      throw new Error('Error fetching term data');
-    }
-  };
-  const { data: termList } = useQuery(['term-data'], fetchTermList, {
-    cacheTime: 10 * 60 * 1000, // cache for 10 minutes
-  });
-
-  const currentTerm = useMemo(() => {
-    if (!termList || termList.length === 0) {
-      return null;
-    }
-
-    const currentDate = new Date();
-
-    for (let i = 0; i < termList.length; i++) {
-      const term = termList[i];
-      const startDate = new Date(term.startDate);
-      const endDate = new Date(term.endDate);
-
-      if (currentDate >= startDate && currentDate <= endDate) {
-        return term.name;
-      }
-    }
-
-    return null; // If no term matches the current date
-  }, [termList]);
-
   const { data, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
       'students-data',
@@ -176,58 +141,27 @@ const Student = () => {
         header: 'Class',
       },
       {
-        accessorKey: 'StudentTermFee[0].total_fee',
+        accessorKey: 'feeAmount',
 
         header: 'Total Fee',
         size: 50,
-        Cell: ({ row }) => {
-          const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
-          const totalFee = studentTermFee
-            ? currentTerm === 'Term 1'
-              ? Number(studentTermFee.term_one_fee) +
-                Number(studentTermFee.bus_fee) +
-                Number(studentTermFee.boarding_fee) +
-                Number(studentTermFee.food_fee)
-              : currentTerm === 'Term 2'
-              ? Number(studentTermFee.term_two_fee) +
-                Number(studentTermFee.bus_fee) +
-                Number(studentTermFee.boarding_fee) +
-                Number(studentTermFee.food_fee)
-              : currentTerm === 'Term 3'
-              ? Number(studentTermFee.term_three_fee) +
-                Number(studentTermFee.bus_fee) +
-                Number(studentTermFee.boarding_fee) +
-                Number(studentTermFee.food_fee)
-              : 0
-            : 0;
-
-          return `${KES.format(totalFee)}`;
+        Cell: ({ cell }) => {
+          return `${KES.format(cell.getValue() ?? 0)}`;
         },
       },
 
       {
-        accessorKey: 'StudentTermFee[0]',
+        accessorKey: 'feeBalance',
 
         header: 'Fee Balance',
         size: 50,
-        Cell: ({ row }) => {
-          const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
-          const balance = studentTermFee
-            ? currentTerm === 'Term 1'
-              ? Number(studentTermFee.term_one_balance)
-              : currentTerm === 'Term 2'
-              ? Number(studentTermFee.term_two_balance)
-              : currentTerm === 'Term 3'
-              ? Number(studentTermFee.term_three_balance)
-              : 0
-            : 0;
-
-          return `${KES.format(balance)}`;
+        Cell: ({ cell }) => {
+          return `${KES.format(cell.getValue() ?? 0)}`;
         },
       },
     ],
 
-    [currentTerm]
+    []
   );
 
   const deletePost = useMutation((id) => {

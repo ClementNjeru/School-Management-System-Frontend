@@ -92,9 +92,12 @@ const PaymentUpdate = ({
       },
     }
   );
+  const id = watch('id') ?? 0;
   const classId = watch('classId') ?? '0';
   const studentId = watch('studentId') ?? '0';
-  const termId = watch('termId') ?? '0';
+  const amount = watch('amount') ?? 0;
+  const reference = watch('reference') ?? '';
+  const payment_mode = watch('payment_mode') ?? 'MPESA';
 
   // set classId when student is selected
   const selectedClass = useMemo(() => {
@@ -106,15 +109,26 @@ const PaymentUpdate = ({
       setValue('classId', selectedStudent.classId);
     }
   }, [studentsList, studentId, setValue]);
+  const feeAmountDue = useMemo(() => {
+    const selectedStudent = studentsList?.find((student) => {
+      return student.id === Number(studentId);
+    });
+
+    if (selectedStudent) {
+      return selectedStudent.feeBalance;
+    }
+  }, [studentsList, studentId]);
 
   const { isLoading } = updatePost;
   const onSubmit = async (data) => {
     try {
       const requestData = {
-        ...data,
+        id,
         classId: Number(classId),
         studentId: Number(studentId),
-        termId: Number(termId),
+        amount: Number(amount),
+        reference,
+        payment_mode,
       };
       updatePost.mutate(requestData);
     } catch (error) {
@@ -199,6 +213,27 @@ const PaymentUpdate = ({
                     </Select>
                   </div>
                 )}
+              />
+            </div>
+            {/* AMOUNT DUE */}
+            <div className="grid grid-cols-2 py-4 items-center">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="amountDue"
+                  value="Amount Due"
+                  className="font-semibold"
+                />
+              </div>
+
+              <TextInput
+                key={feeAmountDue}
+                value={
+                  feeAmountDue
+                    ? `KES ${new Intl.NumberFormat().format(feeAmountDue)}`
+                    : 'KES 0.00'
+                }
+                placeholder="KES. 0.00"
+                readOnly // If you don't want the user to edit the amount
               />
             </div>
 

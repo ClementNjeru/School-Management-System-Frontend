@@ -41,7 +41,6 @@ const PaymentCreate = ({
   // reset form
   useEffect(() => {
     reset({
-      termId: '',
       classId: '',
       studentId: '',
       amount: '',
@@ -98,7 +97,6 @@ const PaymentCreate = ({
   );
   const classId = watch('classId') ?? '0';
   const studentId = watch('studentId') ?? '0';
-  const termId = watch('termId') ?? '0';
 
   // set classId when student is selected
   const selectedClass = useMemo(() => {
@@ -111,6 +109,16 @@ const PaymentCreate = ({
     }
   }, [studentsList, studentId, setValue]);
 
+  const feeAmountDue = useMemo(() => {
+    const selectedStudent = studentsList?.find((student) => {
+      return student.id === Number(studentId);
+    });
+
+    if (selectedStudent) {
+      return selectedStudent.feeBalance;
+    }
+  }, [studentsList, studentId]);
+
   const { isLoading } = createPost;
   const onSubmit = async (data) => {
     try {
@@ -118,7 +126,6 @@ const PaymentCreate = ({
         ...data,
         classId: Number(classId),
         studentId: Number(studentId),
-        termId: Number(termId),
       };
       createPost.mutate(requestData);
     } catch (error) {
@@ -205,6 +212,27 @@ const PaymentCreate = ({
                   )}
                 />
               </div>
+            </div>
+            {/* AMOUNT DUE */}
+            <div className="grid grid-cols-2 py-4 items-center">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="amountDue"
+                  value="Amount Due"
+                  className="font-semibold"
+                />
+              </div>
+
+              <TextInput
+                key={feeAmountDue}
+                value={
+                  feeAmountDue
+                    ? `KES ${new Intl.NumberFormat().format(feeAmountDue)}`
+                    : 'KES 0.00'
+                }
+                placeholder="KES. 0.00"
+                readOnly // If you don't want the user to edit the amount
+              />
             </div>
             {/* PAYMENT MODE */}
             <div>
