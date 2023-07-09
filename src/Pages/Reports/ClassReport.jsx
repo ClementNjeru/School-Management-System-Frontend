@@ -7,17 +7,10 @@ import MaterialReactTable, {
   MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
 } from 'material-react-table';
-import { format } from 'date-fns';
 
-import {
-  Box,
-  IconButton,
-  Pagination,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-
+import { Box, IconButton, Pagination, Toolbar, Tooltip } from '@mui/material';
+import { ExportToCsv } from 'export-to-csv';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -120,24 +113,21 @@ const StudentClassReport = () => {
       },
       {
         accessorKey: 'first_name',
-
-        header: 'First Name',
-      },
-
-      {
-        accessorKey: 'last_name',
-
-        header: 'Last Name',
-      },
-
-      {
-        accessorKey: 'dob',
-
-        header: 'DOB',
-        Cell: ({ cell }) => {
-          const dateTime = cell.getValue?.();
-          return dateTime ? format(new Date(dateTime), 'yyyy-MM-dd') : '';
+        header: 'Student Name',
+        Cell: ({ row }) => {
+          return `${row.original.first_name} ${row.original.last_name}`;
         },
+      },
+
+      {
+        accessorKey: 'guardianName',
+
+        header: 'Guardian Name',
+      },
+      {
+        accessorKey: 'guardianPhone',
+
+        header: 'Guardian Phone',
       },
       {
         accessorKey: 'Class.name',
@@ -167,6 +157,57 @@ const StudentClassReport = () => {
 
     []
   );
+
+  // export to csv
+  const csvOptions = {
+    fieldSeparator: ',',
+
+    quoteStrings: '"',
+
+    decimalSeparator: '.',
+
+    showLabels: true,
+
+    useBom: true,
+
+    useKeysAsHeaders: false,
+
+    headers: columns?.map((c) => c.header),
+  };
+
+  const csvExporterRef = useRef(null);
+
+  if (!csvExporterRef.current) {
+    csvExporterRef.current = new ExportToCsv(csvOptions);
+  }
+
+  const handleExportRows = (rows) => {
+    csvExporterRef.current.generateCsv(rows?.map((row) => row.original));
+  };
+
+  const transformDataForCsv = (items) => {
+    return items?.map((item) => {
+      // Modify this object based on the structure of your `item`
+      return {
+        Id: item.id,
+        'Student Name': `${item.first_name} ${item.last_name}`,
+        'Guardian Name': item.guardianName,
+        'Guardian Phone': item.guardianPhone,
+        Grade: item.Class.name,
+        'Fee Total': item.feeAmount,
+        'Fee Balance': item.feeBalance,
+      };
+    });
+  };
+
+  const handleExportData = () => {
+    if (data) {
+      const transformedData = transformDataForCsv(data.items);
+      csvExporterRef.current.generateCsv(transformedData);
+    } else {
+      console.error('Data is undefined.');
+    }
+  };
 
   //column definitions...
   return (
@@ -235,6 +276,11 @@ const StudentClassReport = () => {
               <MRT_ToggleDensePaddingButton table={tableInstanceRef.current} />
 
               <MRT_FullScreenToggleButton table={tableInstanceRef.current} />
+              <Tooltip arrow title="Export to SVG">
+                <IconButton onClick={handleExportData}>
+                  <FileDownloadIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Toolbar>
         )}

@@ -390,7 +390,7 @@ const Payment = () => {
                     <Delete />
                   </IconButton>
                 </Tooltip>
-                {/* <Tooltip arrow title="Print Invoice">
+                <Tooltip arrow title="Print Invoice">
                   <IconButton
                     onClick={() => {
                       setPayment(row.original);
@@ -399,7 +399,7 @@ const Payment = () => {
                   >
                     <PrintIcon />
                   </IconButton>
-                </Tooltip> */}
+                </Tooltip>
               </Box>
             )}
             rowCount={data?.itemsPerPage ?? 0}
