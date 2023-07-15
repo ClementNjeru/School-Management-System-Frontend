@@ -19,7 +19,7 @@ const StudentClassReport = React.lazy(() =>
 
 // Create a client
 const queryClient = new QueryClient();
-function App() {
+const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -27,9 +27,9 @@ function App() {
           <BrowserRouter>
             <Suspense fallback={<Spinner />}>
               <Routes>
-                <Route path="/" element={<Login />} />
+                <Route path='/' element={<Login />} />
                 <Route
-                  path="/dashboard"
+                  path='/dashboard'
                   element={
                     <Layout>
                       <Dashboard />
@@ -37,7 +37,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/students"
+                  path='/students'
                   element={
                     <Layout>
                       <Student />
@@ -45,7 +45,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/teachers"
+                  path='/teachers'
                   element={
                     <Layout>
                       <Teacher />
@@ -53,7 +53,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/classes"
+                  path='/classes'
                   element={
                     <Layout>
                       <Class />
@@ -62,7 +62,7 @@ function App() {
                 />
 
                 <Route
-                  path="/users"
+                  path='/users'
                   element={
                     <Layout>
                       <User />
@@ -70,7 +70,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/payments"
+                  path='/payments'
                   element={
                     <Layout>
                       <Payment />
@@ -79,7 +79,7 @@ function App() {
                 />
 
                 <Route
-                  path="/school"
+                  path='/school'
                   element={
                     <Layout>
                       <School />
@@ -88,7 +88,7 @@ function App() {
                 />
 
                 <Route
-                  path="/studentclassreport"
+                  path='/studentclassreport'
                   element={
                     <Layout>
                       <StudentClassReport />
@@ -102,13 +102,14 @@ function App() {
       </QueryClientProvider>
     </ErrorBoundary>
   );
-}
+};
 
 export default App;
-function Spinner() {
+
+const Spinner = () => {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+    <div className='flex items-center justify-center h-screen'>
+      <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600'></div>
     </div>
   );
-}
+};

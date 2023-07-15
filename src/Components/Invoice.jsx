@@ -9,6 +9,7 @@ import 'jspdf-autotable';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import PrintIcon from '@mui/icons-material/Print';
+import { useIsAuthenticated } from '../utils/hooks/localstorage';
 // Configure the worker source
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -22,20 +23,22 @@ function Invoice({ payments }) {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { name: StaffName } = useIsAuthenticated();
+
   const fetchData = async () => {
     try {
-      const [studentResponse, classResponse, termResponse, schoolResponse] =
+      const [studentResponse, classResponse, schoolResponse] =
         await Promise.all([
           axios.get(`${process.env.REACT_APP_BASE_URL}/students/all`),
           axios.get(`${process.env.REACT_APP_BASE_URL}/classes/all`),
-          axios.get(`${process.env.REACT_APP_BASE_URL}/terms/all`),
+
           axios.get(`${process.env.REACT_APP_BASE_URL}/schools/all`),
         ]);
 
       return {
         studentList: studentResponse?.data?.student,
         classList: classResponse?.data?.grade,
-        termTypes: termResponse?.data?.term,
+
         school: schoolResponse?.data,
       };
     } catch (error) {
@@ -50,7 +53,6 @@ function Invoice({ payments }) {
 
   const studentList = dataList?.studentList;
   const classList = dataList?.classList;
-  const termList = dataList?.termTypes;
   const schoolData = dataList?.school;
 
   const getStudentName = useCallback(
@@ -65,6 +67,42 @@ function Invoice({ payments }) {
           return full_name;
         } else {
           return 'Student not found';
+        }
+      }
+    },
+    [studentList]
+  );
+
+  const getGuardianName = useCallback(
+    (payments) => {
+      if (studentList) {
+        const student = studentList?.find(
+          (student) => student.id === payments?.studentId
+        );
+
+        if (student) {
+          const full_name = student.guardianName;
+          return full_name;
+        } else {
+          return 'Guardian not found';
+        }
+      }
+    },
+    [studentList]
+  );
+
+  const getStudentBalance = useCallback(
+    (payments) => {
+      if (studentList) {
+        const student = studentList?.find(
+          (student) => student.id === payments?.studentId
+        );
+
+        if (student) {
+          const balance = student.feeBalance ?? 0;
+          return balance;
+        } else {
+          return 'Balance not found';
         }
       }
     },
@@ -87,24 +125,6 @@ function Invoice({ payments }) {
       }
     },
     [classList]
-  );
-
-  const getTermName = useCallback(
-    (payments) => {
-      if (termList) {
-        const term = termList?.find(
-          (classname) => term.id === payments?.termId
-        );
-
-        if (term) {
-          const name = term.name;
-          return name;
-        } else {
-          return 'Term not found';
-        }
-      }
-    },
-    [termList]
   );
 
   const date = new Date();
@@ -132,25 +152,27 @@ function Invoice({ payments }) {
     { value: second },
   ] = dateTimeFormat.formatToParts(date);
 
-  // console.log('school', schoolData?.name);
-  // console.log('student list', studentList);
-
   const generatePDF = useCallback(() => {
-    if (payments && !loadingData) {
+    if (payments) {
       try {
         const doc = new jsPDF();
-        const title = schoolData?.name ?? 'SchoolSoft';
-        // const companyName = schoolData?.school?.name ?? '';
-        const companyAddress = schoolData?.address ?? '';
-        const companyAddress2 = schoolData?.address2 ?? '';
-        const companyPhone = schoolData?.phone ?? '';
-        const companyPhone2 = schoolData?.phone2 ?? '';
-        const companyEmail = schoolData?.email ?? '';
-        const companyTown = schoolData?.town ?? '';
+        const schoolName = schoolData?.name ?? 'SchoolSoft';
+        const title = 'Invoice';
+        const schoolAddress = schoolData?.address ?? '';
+        const schoolAddress2 = schoolData?.address2 ?? '';
+        const schoolPhone = schoolData?.phone ?? '';
+        const schoolPhone2 = schoolData?.phone2 ?? '';
+        const schoolEmail = schoolData?.email ?? '';
+        const schoolTown = schoolData?.town ?? '';
+        const bankName = schoolData?.bankName ?? '';
+        const bankAcc = schoolData?.bankAcc ?? '';
+        const mpesaInfo = schoolData?.mpesaInfo ?? '';
         const titleWidth = doc.getStringUnitWidth(title) * doc.getFontSize();
+        const studentName = getStudentName(payments);
+        const className = getClassName(payments);
+        const guardianName = getGuardianName(payments);
+        const feeBalance = getStudentBalance(payments);
 
-        // const balance = payments.balance || 0;
-        // Add the company details and salutation to the PDF
         const date = new Date();
         const dateTimeFormat = new Intl.DateTimeFormat('en-US', {
           year: 'numeric',
@@ -178,39 +200,65 @@ function Invoice({ payments }) {
         const invoiceGeneratedText = `${day} ${month} ${year} ${hour}:${minute}:${second}`;
 
         doc.setFontSize(18);
-        doc.text(title, doc.internal.pageSize.getWidth() / 2, 20, {
-          align: 'center',
-        });
-
+        doc.text(title, 20, 10);
         doc.setFontSize(12);
-        doc.text(companyAddress, 20, 27);
-        doc.text(companyAddress2, 20, 33);
-        doc.text(companyTown, 20, 39);
-        doc.text('Tel:', doc.internal.pageSize.getWidth() / 2 + 10, 27);
-        doc.text(
-          `${companyPhone} / ${companyPhone2}`,
-          doc.internal.pageSize.getWidth() / 2 + 30,
-          27
-        );
-        doc.text('Date:', doc.internal.pageSize.getWidth() / 2 + 10, 33);
-        doc.text(
-          invoiceGeneratedText,
-          doc.internal.pageSize.getWidth() / 2 + 30,
-          33
-        );
-        doc.text('Email:', doc.internal.pageSize.getWidth() / 2 + 10, 39);
-        doc.text(companyEmail, doc.internal.pageSize.getWidth() / 2 + 30, 39);
+        doc.text(schoolName, 20, 20);
+        doc.text(schoolAddress, 20, 30);
+        doc.text(schoolAddress2, 20, 40);
+        doc.text(`Tel: ${schoolPhone} / ${schoolPhone2}`, 20, 50);
+        doc.text(`Email: ${schoolEmail}`, 20, 60);
+        doc.text(`Town: ${schoolTown}`, 20, 70);
+        doc.setFontSize(16);
+        doc.text('Student Details:', 20, 85);
+        doc.setFontSize(10);
+        doc.text(`Name: ${studentName}`, 20, 95);
+        doc.text(`Grade: ${className}`, 20, 105);
+        doc.text(`Guardian: ${guardianName}`, 20, 115);
+        doc.setFontSize(16);
+        doc.text('Invoice Details:', 120, 85);
+        doc.setFontSize(10);
+        doc.text(`Date Paid: ${invoiceGeneratedText}`, 120, 95);
+        doc.text(`Amount: ${KES.format(payments.amount)}`, 120, 105);
+        doc.text(`Mode of Payment: ${payments.payment_mode}`, 120, 115);
 
-        doc.setFontSize(12);
+        let totalPaid = payments.amount ?? 0;
 
-        const startY1 = doc.autoTable.previous.finalY + 35;
-        const thankYouText =
-          'Thank you for choosing us for your hotel booking!';
-        const centerX = doc.internal.pageSize.getWidth() / 2;
-
-        doc.text(thankYouText, centerX, startY1, {
-          align: 'center',
+        let tuition = (totalPaid * 0.6).toFixed(2);
+        let transport = (totalPaid * 0.15).toFixed(2);
+        let food = (totalPaid * 0.15).toFixed(2);
+        let boarding = (totalPaid * 0.1).toFixed(2);
+        doc.autoTable({
+          startY: 120,
+          head: [['Item', 'Amount']],
+          body: [
+            ['Tuition Fee', KES.format(tuition)],
+            ['Transport', KES.format(transport)],
+            ['Food', KES.format(food)],
+            ['Boarding', KES.format(boarding)],
+            ['Total Balance Due', KES.format(feeBalance)],
+          ],
+          foot: [['Paid Total', KES.format(payments.amount)]],
+          footStyles: {
+            fillColor: false,
+            textColor: [0, 0, 0],
+          },
+          headStyles: {
+            fillColor: false,
+            textColor: [0, 0, 0],
+          },
+          styles: {
+            fillColor: false,
+            lineColor: [0, 0, 0],
+          },
         });
+        doc.setFontSize(10);
+        const startY1 = doc.autoTable.previous.finalY + 10;
+
+        doc.text(`Served By: ${StaffName}`, 20, startY1);
+        doc.text('Bank Details:', 20, startY1 + 10);
+        doc.text(`Account No: ${bankAcc}`, 20, startY1 + 20);
+        doc.text(`Bank: ${bankName}`, 20, startY1 + 30);
+        doc.text(`Mpesa: ${mpesaInfo}`, 20, startY1 + 40);
 
         const blob = doc.output('blob');
         const url = URL.createObjectURL(blob);
@@ -220,7 +268,15 @@ function Invoice({ payments }) {
         console.error('Error generating PDF:', error);
       }
     }
-  }, [schoolData, payments, loadingData]);
+  }, [
+    payments,
+    schoolData,
+    getClassName,
+    getStudentName,
+    getGuardianName,
+    getStudentBalance,
+    StaffName,
+  ]);
 
   const printPDF = () => {
     if (!pdfUrl) return;
@@ -261,9 +317,9 @@ function Invoice({ payments }) {
   return (
     <>
       {payments && (
-        <div className="bg-slate-50  py-2 px-4 flex items-center justify-between">
-          <p className="text-gray-600 font-semibold text-lg">Invoice Preview</p>
-          <Tooltip arrow title="Print">
+        <div className='bg-slate-50  py-2 px-4 flex items-center justify-between'>
+          <p className='text-gray-600 font-semibold text-lg'>Invoice Preview</p>
+          <Tooltip arrow title='Print'>
             <IconButton onClick={printPDF}>
               <PrintIcon />
             </IconButton>
@@ -271,7 +327,7 @@ function Invoice({ payments }) {
         </div>
       )}
       {showPreview && pdfUrl ? (
-        <div className="w-full h-[600px]">
+        <div className='w-full h-[600px]'>
           <PDFDocument
             file={pdfUrl}
             onLoadSuccess={() => setIsLoading(false)}
@@ -287,7 +343,7 @@ function Invoice({ payments }) {
             <PDFPage pageNumber={1} />
           </PDFDocument>
           {loadingData && (
-            <div className="flex justify-center items-center absolute inset-0">
+            <div className='flex justify-center items-center absolute inset-0'>
               <div className={styles.spinner}></div>
             </div>
           )}
