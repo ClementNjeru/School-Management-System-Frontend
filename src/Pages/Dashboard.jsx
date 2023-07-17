@@ -3,7 +3,8 @@ import axios from 'axios';
 import React from 'react';
 import Stats from '../Components/Cards/Stats';
 import PaymentModesPie from '../Components/Cards/DataPie';
-import FeeData from '../Components/Cards/FeeData';
+// import FeeData from '../Components/Cards/FeeData';
+import BarChart  from '../Components/Cards/BarChart';
 
 const Dashboard = () => {
   const fetchData = async () => {
@@ -23,9 +24,9 @@ const Dashboard = () => {
         axios.get(
           `${process.env.REACT_APP_BASE_URL}/payments/get/paymentmodes`
         ),
-        axios.get(
-          `${process.env.REACT_APP_BASE_URL}/student-fees/total/yearly`
-        ),
+        // axios.get(
+        //   `${process.env.REACT_APP_BASE_URL}/student-fees/total/yearly`
+        // ),
       ]);
 
       return {
@@ -62,11 +63,16 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <PaymentModesPie paymentModes={paymentModes} isLoading={isLoading} />
+       
+        <BarChart isLoading={isLoading} />
+   
 
-        <div className="">
+        {/* <div className="">
           <FeeData feePayments={feePayments} isLoading={isLoading} />
-        </div>
+        </div> */}
       </div>
+
+      
       {/*
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
 

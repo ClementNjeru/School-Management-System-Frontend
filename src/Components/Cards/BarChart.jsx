@@ -1,101 +1,60 @@
 import React, { PureComponent } from 'react';
-import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  LabelList,
-} from 'recharts';
+import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
+
 
 
 const data = [
-    {
-      name: 'Grade 1',
-      Boys: 4000,
-      Girls: 2400,
-    },
-    {
-      name: 'Grade 2',
-      Boys: 3000,
-      Girls: 1398,
-    },
-    {
-      name: 'Grade 3',
-      Boys: 2000,
-      Girls: 8,
-    },
-    {
-      name: 'Grade 4',
-      Boys: 2780,
-      Girls: 3908,
-    },
-    {
-      name: 'Grade 5',
-      Boys: 18,
-      Girls: 4800,
-    },
-    {
-      name: 'Grade 6',
-      Boys: 2390,
-      Girls: 3800,
-    },
-    {
-      name: 'Grade 7',
-      Boys: 3490,
-      Girls: 4300,
-    },
-    {
-      name: 'Grade 8',
-      Boys: 3490,
-      Girls: 400,
-    },
-  ];
-  
-  const renderCustomizedLabel = (props) => {
-    const { x, y, width, height, value } = props;
-    const radius = 10;
-  
-    return (
-      <g>
-        <circle cx={x + width / 2} cy={y - radius} r={radius} fill="#8884d8" />
-        <text x={x + width / 2} y={y - radius} fill="#fff" textAnchor="middle" dominantBaseline="middle">
-          {value.split(' ')[1]}
-        </text>
-      </g>
-    );
-  };
+  { name: 'Paid', value: 12 },
+  { name: 'Unpaid', value: 67},
+  { name: 'Partial', value: 33 },
+];
 
- function Chart (){
+const COLORS = ['#FFFF00', '#00FF00', '#FF0000'];
 
-    return (
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-        <BarChart
-          width={500}
-          height={450}
-          data={data}
-          margin={{
-            top: 15,
-            right: 0,
-            left: 0,
-            bottom: 0,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="Boys" fill="#8884d8" minPointSize={5}>
-            <LabelList dataKey="name" content={renderCustomizedLabel} />
-          </Bar>
-          <Bar dataKey="Girls" fill="#82ca9d" minPointSize={10} />
-        </BarChart>
-    )
+  return (
+    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
 
- }
+function Chart() {
 
- export default Chart;
+  return (
+    <div className="bg-white mt-3 lg:h-96 h-auto p-2 w-150 rounded-lg shadow">
+      <p className="text-gray-700 font-semibold">Payment Status Per Class</p>
+      <>
+
+        <PieChart width={400} height={400}>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={renderCustomizedLabel}
+            outerRadius={80}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+        </PieChart>
+
+      </>
+
+    </div>
+
+  );
+}
+export default Chart;
+
+
+
