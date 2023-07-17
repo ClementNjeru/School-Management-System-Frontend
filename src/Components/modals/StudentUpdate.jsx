@@ -1,27 +1,20 @@
-import {
-  Button,
-  Checkbox,
-  Label,
-  Modal,
-  Select,
-  TextInput,
-} from "flowbite-react";
-import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import ReactDatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { Button, Label, Modal, Select, TextInput } from 'flowbite-react';
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import ReactDatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 const gender = [
   {
-    name: "MALE",
-    id: "MALE",
+    name: 'MALE',
+    id: 'MALE',
   },
   {
-    name: "FEMALE",
-    id: "FEMALE",
+    name: 'FEMALE',
+    id: 'FEMALE',
   },
 ];
 
@@ -32,44 +25,22 @@ const StudentUpdate = ({
   setShowErrorToast,
   setShowSuccessToast,
 }) => {
-  const [additionalPayments, setAdditionalPayments] = useState({
-    food_fee: false,
-    bus_fee: false,
-    boarding_fee: false,
-  });
-  useEffect(() => {
-    if (Number(objData?.StudentTermFee[0]?.bus_fee) !== 0) {
-      setAdditionalPayments((prevState) => ({ ...prevState, bus_fee: true }));
-    }
-    if (Number(objData?.StudentTermFee[0]?.boarding_fee) !== 0) {
-      setAdditionalPayments((prevState) => ({
-        ...prevState,
-        boarding_fee: true,
-      }));
-    }
-    if (Number(objData?.StudentTermFee[0]?.food_fee) !== 0) {
-      setAdditionalPayments((prevState) => ({ ...prevState, food_fee: true }));
-    }
-
-    // Cleanup function
-    return () => {
-      setAdditionalPayments({
-        food_fee: false,
-        bus_fee: false,
-        boarding_fee: false,
-      });
-    };
-  }, [objData]);
-
   // first_name,last_name,dob,gender
   const FormSchema = z.object({
     id: z.number().optional(),
-    first_name: z.string().min(2, { message: "First name is required" }),
-    last_name: z.string().min(2, { message: "Last name is required" }),
+    first_name: z.string().min(2, { message: 'First name is required' }),
+    last_name: z.string().min(2, { message: 'Last name is required' }),
     dob: z.date(),
+    feeAmount: z.number().refine((value) => value >= 0, {
+      message: 'Amount total must be a non-negative number',
+    }),
+    guardianName: z.string().min(2, { message: 'Last name is required' }),
+    guardianPhone: z
+      .string()
+      .regex(/^(\+?\d{2,3})?0?\d{9}$/, { message: 'Invalid phone number' }),
     gender: z
-      .enum(["MALE", "FEMALE"])
-      .refine((value) => value === "MALE" || value === "FEMALE", {
+      .enum(['MALE', 'FEMALE'])
+      .refine((value) => value === 'MALE' || value === 'FEMALE', {
         message: "Gender must be FEMALE' or 'MALE'",
       }),
     // classId: z.string().min(1, { message: "Class is required" }),
@@ -83,18 +54,21 @@ const StudentUpdate = ({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(FormSchema),
-    reValidateMode: "onChange",
+    reValidateMode: 'onChange',
   });
   const queryClient = useQueryClient();
 
   useEffect(() => {
     reset({
       id: objData?.id ?? 0,
-      first_name: objData?.first_name ?? "",
-      last_name: objData?.last_name ?? "",
+      first_name: objData?.first_name ?? '',
+      last_name: objData?.last_name ?? '',
       dob: objData?.dob ? new Date(objData.dob) : new Date(),
       classId: objData?.classId ?? 0,
-      gender: objData?.gender ?? "MALE",
+      gender: objData?.gender ?? 'MALE',
+      feeAmount: objData?.feeAmount ?? 0,
+      guardianName: objData?.guardianName ?? '',
+      guardianPhone: objData?.guardianPhone ?? '',
     });
   }, [reset, objData]);
 
@@ -105,10 +79,10 @@ const StudentUpdate = ({
       );
       return response.data.grade;
     } catch (error) {
-      throw new Error("Error fetching guest data");
+      throw new Error('Error fetching guest data');
     }
   };
-  const { data: classList } = useQuery(["class-data"], fetchClassList, {
+  const { data: classList } = useQuery(['class-data'], fetchClassList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
@@ -117,12 +91,11 @@ const StudentUpdate = ({
       const { id, ...postData } = updatedPost;
       return axios.patch(`${process.env.REACT_APP_BASE_URL}/student/${id}`, {
         ...postData,
-        additionalPayments,
       });
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["students-data"]);
+        queryClient.invalidateQueries(['students-data']);
         setShowSuccessToast(true);
         reset();
         onClose();
@@ -133,7 +106,7 @@ const StudentUpdate = ({
     }
   );
   const { isLoading } = updatePost;
-  const classId = watch("classId") ?? "0";
+  const classId = watch('classId') ?? '0';
   const onSubmit = async (data) => {
     try {
       const requestData = {
@@ -169,7 +142,7 @@ const StudentUpdate = ({
                       id="first_name"
                       placeholder="First name"
                       required={true}
-                      color={errors.first_name ? "failure" : "gray"}
+                      color={errors.first_name ? 'failure' : 'gray'}
                       helperText={errors.first_name?.message}
                       {...field}
                     />
@@ -189,7 +162,7 @@ const StudentUpdate = ({
                       id="last_name"
                       placeholder="Last name"
                       required={true}
-                      color={errors.last_name ? "failure" : "gray"}
+                      color={errors.last_name ? 'failure' : 'gray'}
                       helperText={errors.last_name?.message}
                       {...field}
                     />
@@ -252,7 +225,7 @@ const StudentUpdate = ({
                         id="gender"
                         value={field.value}
                         className={`input ${
-                          errors.gender ? "failure" : "gray"
+                          errors.gender ? 'failure' : 'gray'
                         }`}
                         {...field}
                         required={true}
@@ -290,7 +263,7 @@ const StudentUpdate = ({
                         id="classId"
                         // type="number"
                         value={field.value}
-                        color={`${errors.classId ? "failure" : "gray"}`}
+                        color={`${errors.classId ? 'failure' : 'gray'}`}
                         required={true}
                         helperText={errors.classId?.message}
                         {...field}
@@ -309,96 +282,82 @@ const StudentUpdate = ({
                 />
               </div>
             </div>
-            {/* additional subscription checkboxes (food,bus_fee,boarding) */}
-            <div className="py-2">
-              <Label>Additional Payments</Label>
-              <div className="grid grid-cols-3 gap-[3px] ">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 gap-2 ${
-                      additionalPayments?.bus_fee ? "bg-purple-100" : "bg-white"
-                    }
-                    `}
-                  >
-                    <Checkbox
-                      className="ring-0 focus:ring-0"
-                      id="bus_fee"
-                      checked={additionalPayments?.bus_fee}
-                      onChange={(e) => {
-                        setAdditionalPayments({
-                          ...additionalPayments,
-                          bus_fee: e.target.checked,
-                        });
-                      }}
-                    />
-                    <Label
-                      className="text-xs whitespace-nowrap"
-                      htmlFor="bus_fee"
-                    >
-                      Bus Fee
-                    </Label>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 gap-2 ${
-                      additionalPayments?.boarding_fee
-                        ? "bg-purple-100"
-                        : "bg-white"
-                    }
-                    `}
-                  >
-                    <Checkbox
-                      className="ring-0 focus:ring-0"
-                      id="boarding_fee"
-                      checked={additionalPayments?.boarding_fee}
-                      onChange={(e) => {
-                        setAdditionalPayments({
-                          ...additionalPayments,
-                          boarding_fee: e.target.checked,
-                        });
-                      }}
-                    />
-                    <Label
-                      className="text-xs whitespace-nowrap"
-                      htmlFor="boarding_fee"
-                    >
-                      Boarding Fee
-                    </Label>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer
-                    gap-2
-                    hover:bg-gray-200 ${
-                      additionalPayments?.food_fee
-                        ? "bg-purple-100"
-                        : "bg-white"
-                    }
-                    `}
-                  >
-                    <Checkbox
-                      className="ring-0 focus:ring-0"
-                      id="food_fee"
-                      checked={additionalPayments?.food_fee}
-                      onChange={(e) => {
-                        setAdditionalPayments({
-                          ...additionalPayments,
-                          food_fee: e.target.checked,
-                        });
-                      }}
-                    />
-                    <Label
-                      className="text-xs whitespace-nowrap"
-                      htmlFor="food_fee"
-                    >
-                      Food Fee
-                    </Label>
-                  </div>
-                </div>
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="guardianName"
+                  value="Guardian Name"
+                  color={errors.guardianName ? 'failure' : 'gray'}
+                />
               </div>
+              <Controller
+                control={control}
+                name="guardianName"
+                defaultValue=""
+                render={({ field }) => (
+                  <TextInput
+                    id="guardianName"
+                    placeholder="Guardian name"
+                    required={true}
+                    color={errors.guardianName ? 'failure' : 'gray'}
+                    helperText={errors.guardianName?.message}
+                    {...field}
+                  />
+                )}
+              />
             </div>
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="guardianPhone"
+                  value="Guardian Phone"
+                  color={errors.guardianPhone ? 'failure' : 'gray'}
+                />
+              </div>
+              <Controller
+                control={control}
+                name="guardianPhone"
+                defaultValue=""
+                render={({ field }) => (
+                  <TextInput
+                    id="guardianPhone"
+                    placeholder="0700000000"
+                    required={true}
+                    color={errors.guardianPhone ? 'failure' : 'gray'}
+                    helperText={errors.guardianPhone?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+            {/* Set fee payment feeAmount */}
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="feeAmount"
+                  value="Amount"
+                  color={errors.feeAmount ? 'failure' : 'gray'}
+                />
+              </div>
+              <Controller
+                control={control}
+                name="feeAmount"
+                defaultValue={0}
+                render={({ field }) => (
+                  <TextInput
+                    id="feeAmount"
+                    type="number"
+                    placeholder="Amount"
+                    required={true}
+                    color={errors.feeAmount ? 'failure' : 'gray'}
+                    helperText={errors.feeAmount?.message}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  />
+                )}
+              />
+            </div>
+
             <div className="w-full mt-3 flex items-end">
               <Button
                 className="ml-auto"

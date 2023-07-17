@@ -5,18 +5,18 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import { HiCheck } from "react-icons/hi";
-import { IoMdClose } from "react-icons/io";
+} from 'react';
+import { HiCheck } from 'react-icons/hi';
+import { IoMdClose } from 'react-icons/io';
 import MaterialReactTable, {
   MRT_FullScreenToggleButton,
   MRT_GlobalFilterTextField,
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
-} from "material-react-table";
-import { format } from "date-fns";
-import PrintIcon from "@mui/icons-material/Print";
+} from 'material-react-table';
+import { format } from 'date-fns';
+import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
   Dialog,
@@ -30,31 +30,31 @@ import {
   Toolbar,
   Tooltip,
   createTheme,
-} from "@mui/material";
+} from '@mui/material';
 
-import RefreshIcon from "@mui/icons-material/Refresh";
-import { Delete, Edit } from "@mui/icons-material";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Toast } from "flowbite-react";
-import PaymentCreate from "../Components/modals/PaymentCreate";
-import axios from "axios";
-import PaymentUpdate from "../Components/modals/PaymentUpdate";
-import { ThemeContext } from "../context/ThemeContext";
-import Invoice from "../Components/Invoice";
-const KES = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "KES",
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { Delete, Edit } from '@mui/icons-material';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, Toast } from 'flowbite-react';
+import PaymentCreate from '../Components/modals/PaymentCreate';
+import axios from 'axios';
+import PaymentUpdate from '../Components/modals/PaymentUpdate';
+import { ThemeContext } from '../context/ThemeContext';
+import Invoice from '../Components/Invoice';
+const KES = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'KES',
 });
 
 const DarkTheme = createTheme({
   palette: {
-    type: "dark",
+    type: 'dark',
   },
 });
 
 const LightTheme = createTheme({
   palette: {
-    type: "light",
+    type: 'light',
   },
 });
 
@@ -64,7 +64,7 @@ const Payment = () => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
   const tableInstanceRef = useRef(null);
   const [sorting, setSorting] = useState([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -95,10 +95,10 @@ const Payment = () => {
       );
       return response.data.student;
     } catch (error) {
-      throw new Error("Error fetching students data");
+      throw new Error('Error fetching students data');
     }
   };
-  const { data: studentsList } = useQuery(["stud-data"], fetchStudentsList, {
+  const { data: studentsList } = useQuery(['stud-data'], fetchStudentsList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
   // fetch classes
@@ -109,16 +109,16 @@ const Payment = () => {
       );
       return response.data.grade;
     } catch (error) {
-      throw new Error("Error fetching class data");
+      throw new Error('Error fetching class data');
     }
   };
-  const { data: classsList } = useQuery(["clas-data"], fetchClassList, {
+  const { data: classsList } = useQuery(['clas-data'], fetchClassList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
   const { data, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
-      "payments-data",
+      'payments-data',
 
       columnFilters, //refetch when columnFilters changes
 
@@ -135,18 +135,20 @@ const Payment = () => {
       const fetchURL = new URL(`${process.env.REACT_APP_BASE_URL}/feepayments`);
 
       fetchURL.searchParams.set(
-        "start",
+        'start',
 
         `${pagination.pageIndex * pagination.pageSize}`
       );
 
-      fetchURL.searchParams.set("size", `${pagination.pageSize}`);
+      fetchURL.searchParams.set('size', `${pagination.pageSize}`);
 
-      fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
+      fetchURL.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
 
-      fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
+      if (globalFilter) {
+        fetchURL.pathname = `/api/payments/search/${globalFilter}`;
+      }
 
-      fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+      fetchURL.searchParams.set('sorting', JSON.stringify(sorting ?? []));
 
       const response = await fetch(fetchURL.href);
 
@@ -164,15 +166,15 @@ const Payment = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
+        accessorKey: 'id',
 
-        header: "Id",
+        header: 'Id',
         size: 40,
       },
       {
-        accessorKey: "studentId",
+        accessorKey: 'studentId',
 
-        header: "Student Name",
+        header: 'Student Name',
         Cell: ({ cell }) => {
           const student = studentsList?.find(
             (student) => student.id === cell.getValue()
@@ -182,26 +184,26 @@ const Payment = () => {
       },
 
       {
-        accessorKey: "payment_mode",
+        accessorKey: 'payment_mode',
 
-        header: "Payment Mode",
+        header: 'Payment Mode',
         size: 40,
       },
 
       {
-        accessorKey: "createdAt",
+        accessorKey: 'createdAt',
 
-        header: "Time Stamp",
+        header: 'Time Stamp',
         size: 50,
         Cell: ({ cell }) => {
           const dateTime = cell.getValue?.();
-          return dateTime ? format(new Date(dateTime), "yyyy-MM-dd") : "";
+          return dateTime ? format(new Date(dateTime), 'yyyy-MM-dd') : '';
         },
       },
       {
-        accessorKey: "classId",
+        accessorKey: 'classId',
 
-        header: "Class",
+        header: 'Class',
         size: 40,
         Cell: ({ cell }) => {
           const classs = classsList?.find(
@@ -211,9 +213,9 @@ const Payment = () => {
         },
       },
       {
-        accessorKey: "amount",
+        accessorKey: 'amount',
 
-        header: "Amount",
+        header: 'Amount',
         size: 50,
         Cell: ({ cell }) => {
           return `${KES.format(cell.getValue() ?? 0)}`;
@@ -228,7 +230,7 @@ const Payment = () => {
     return axios
       .delete(`${process.env.REACT_APP_BASE_URL}/fee-payments/${id}`)
       .then(() => {
-        queryClient.invalidateQueries(["guest-data"]);
+        queryClient.invalidateQueries(['guest-data']);
         setShowSuccessToast(true);
         refetch();
       })
@@ -248,7 +250,7 @@ const Payment = () => {
   };
   const handleConfirmDelete = () => {
     if (rowToDelete) {
-      deletePost.mutate(rowToDelete.getValue("id"));
+      deletePost.mutate(rowToDelete.getValue('id'));
       tableData.splice(rowToDelete.index, 1);
     }
     setOpenConfirmDialog(false);
@@ -288,23 +290,23 @@ const Payment = () => {
           {tableInstanceRef.current && (
             <Toolbar
               sx={() => ({
-                backgroundColor: "#ede7f6",
+                backgroundColor: '#ede7f6',
 
-                borderRadius: "4px",
+                borderRadius: '4px',
 
-                display: "flex",
+                display: 'flex',
 
                 flexDirection: {
-                  xs: "column",
+                  xs: 'column',
 
-                  lg: "row",
+                  lg: 'row',
                 },
 
-                gap: "1rem",
+                gap: '1rem',
 
-                justifyContent: "space-between",
+                justifyContent: 'space-between',
 
-                p: "1.5rem 0",
+                p: '1.5rem 0',
               })}
             >
               <Box className="gap-3 flex items-center">
@@ -348,9 +350,9 @@ const Payment = () => {
             muiToolbarAlertBannerProps={
               isError
                 ? {
-                    color: "error",
+                    color: 'error',
 
-                    children: "Error loading data",
+                    children: 'Error loading data',
                   }
                 : undefined
             }
@@ -368,7 +370,7 @@ const Payment = () => {
               </>
             )}
             renderRowActions={({ row }) => (
-              <Box sx={{ display: "flex", gap: "1rem" }}>
+              <Box sx={{ display: 'flex', gap: '1rem' }}>
                 <Tooltip arrow placement="left" title="Edit">
                   <IconButton
                     onClick={() => {
@@ -420,16 +422,16 @@ const Payment = () => {
             {...(tableInstanceRef.current && (
               <Toolbar
                 sx={{
-                  display: "flex",
+                  display: 'flex',
 
-                  justifyContent: "center",
+                  justifyContent: 'center',
 
-                  flexDirection: "column",
+                  flexDirection: 'column',
                 }}
               >
                 <Box
                   className="place-items-center"
-                  sx={{ display: "grid", width: "100%" }}
+                  sx={{ display: 'grid', width: '100%' }}
                 >
                   <Pagination
                     variant="outlined"
@@ -452,16 +454,16 @@ const Payment = () => {
           {tableInstanceRef.current && (
             <Toolbar
               sx={{
-                display: "flex",
+                display: 'flex',
 
-                justifyContent: "center",
+                justifyContent: 'center',
 
-                flexDirection: "column",
+                flexDirection: 'column',
               }}
             >
               <Box
                 className="place-items-center"
-                sx={{ display: "grid", width: "100%" }}
+                sx={{ display: 'grid', width: '100%' }}
               >
                 <Pagination
                   variant="outlined"
@@ -503,7 +505,7 @@ const Payment = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{'Confirm Deletion'}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete this guest?

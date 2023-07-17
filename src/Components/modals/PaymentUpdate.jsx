@@ -1,11 +1,11 @@
-import { Button, Label, Modal, Radio, Select, TextInput } from "flowbite-react";
-import React, { useEffect, useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import "react-datepicker/dist/react-datepicker.css";
+import { Button, Label, Modal, Radio, Select, TextInput } from 'flowbite-react';
+import React, { useEffect, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const PaymentUpdate = ({
   onClose,
@@ -14,7 +14,7 @@ const PaymentUpdate = ({
   setShowErrorToast,
   setShowSuccessToast,
 }) => {
-  const [paymentMode, setPaymentMode] = React.useState("Cash");
+  const [paymentMode, setPaymentMode] = React.useState('Cash');
   const FormSchema = z.object({ id: z.number().optional() });
 
   const {
@@ -26,7 +26,7 @@ const PaymentUpdate = ({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(FormSchema),
-    reValidateMode: "onChange",
+    reValidateMode: 'onChange',
   });
   const queryClient = useQueryClient();
 
@@ -34,12 +34,12 @@ const PaymentUpdate = ({
   useEffect(() => {
     reset({
       id: objData?.id ?? 0,
-      termId: objData?.termId ?? 0,
+
       classId: objData?.classId ?? 0,
       studentId: objData?.studentId ?? 0,
       amount: objData?.amount ?? 0,
-      reference: objData?.reference ?? "",
-      payment_mode: objData?.payment_mode ?? "MPESA",
+      reference: objData?.reference ?? '',
+      payment_mode: objData?.payment_mode ?? 'MPESA',
     });
   }, [reset, objData]);
 
@@ -51,10 +51,10 @@ const PaymentUpdate = ({
       );
       return response.data.student;
     } catch (error) {
-      throw new Error("Error fetching students data");
+      throw new Error('Error fetching students data');
     }
   };
-  const { data: studentsList } = useQuery(["stud-data"], fetchStudentsList, {
+  const { data: studentsList } = useQuery(['stud-data'], fetchStudentsList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
   // fetch classes
@@ -65,24 +65,10 @@ const PaymentUpdate = ({
       );
       return response.data.grade;
     } catch (error) {
-      throw new Error("Error fetching class data");
+      throw new Error('Error fetching class data');
     }
   };
-  const { data: classList } = useQuery(["clas-data"], fetchClassList, {
-    cacheTime: 10 * 60 * 1000, // cache for 10 minutes
-  });
-  //   fetch terms
-  const fetchTermList = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/terms/all`
-      );
-      return response.data.term;
-    } catch (error) {
-      throw new Error("Error fetching term data");
-    }
-  };
-  const { data: termList } = useQuery(["temr-data"], fetchTermList, {
+  const { data: classList } = useQuery(['clas-data'], fetchClassList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
@@ -96,7 +82,7 @@ const PaymentUpdate = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["payments-data"]);
+        queryClient.invalidateQueries(['payments-data']);
         setShowSuccessToast(true);
         reset();
         onClose();
@@ -106,9 +92,12 @@ const PaymentUpdate = ({
       },
     }
   );
-  const classId = watch("classId") ?? "0";
-  const studentId = watch("studentId") ?? "0";
-  const termId = watch("termId") ?? "0";
+  const id = watch('id') ?? 0;
+  const classId = watch('classId') ?? '0';
+  const studentId = watch('studentId') ?? '0';
+  const amount = watch('amount') ?? 0;
+  const reference = watch('reference') ?? '';
+  const payment_mode = watch('payment_mode') ?? 'MPESA';
 
   // set classId when student is selected
   const selectedClass = useMemo(() => {
@@ -117,18 +106,29 @@ const PaymentUpdate = ({
     });
 
     if (selectedStudent) {
-      setValue("classId", selectedStudent.classId);
+      setValue('classId', selectedStudent.classId);
     }
   }, [studentsList, studentId, setValue]);
+  const feeAmountDue = useMemo(() => {
+    const selectedStudent = studentsList?.find((student) => {
+      return student.id === Number(studentId);
+    });
+
+    if (selectedStudent) {
+      return selectedStudent.feeBalance;
+    }
+  }, [studentsList, studentId]);
 
   const { isLoading } = updatePost;
   const onSubmit = async (data) => {
     try {
       const requestData = {
-        ...data,
+        id,
         classId: Number(classId),
         studentId: Number(studentId),
-        termId: Number(termId),
+        amount: Number(amount),
+        reference,
+        payment_mode,
       };
       updatePost.mutate(requestData);
     } catch (error) {
@@ -150,7 +150,7 @@ const PaymentUpdate = ({
                 <Label
                   htmlFor="studentId"
                   value="Student"
-                  color={`${errors.studentId ? "failure" : "gray"}`}
+                  color={`${errors.studentId ? 'failure' : 'gray'}`}
                 />
               </div>
               <Controller
@@ -162,7 +162,7 @@ const PaymentUpdate = ({
                     <Select
                       id="studentId"
                       value={field.value}
-                      color={`${errors.studentId ? "failure" : "gray"}`}
+                      color={`${errors.studentId ? 'failure' : 'gray'}`}
                       required={true}
                       helperText={errors.studentId?.message}
                       {...field}
@@ -185,7 +185,7 @@ const PaymentUpdate = ({
                 <Label
                   htmlFor="classId"
                   value="Class"
-                  color={`${errors.classId ? "failure" : "gray"}`}
+                  color={`${errors.classId ? 'failure' : 'gray'}`}
                 />
               </div>
               <Controller
@@ -197,7 +197,7 @@ const PaymentUpdate = ({
                     <Select
                       id="classId"
                       value={field.value}
-                      color={`${errors.classId ? "failure" : "gray"}`}
+                      color={`${errors.classId ? 'failure' : 'gray'}`}
                       required={true}
                       helperText={errors.classId?.message}
                       {...field}
@@ -215,53 +215,40 @@ const PaymentUpdate = ({
                 )}
               />
             </div>
-            <div>
+            {/* AMOUNT DUE */}
+            <div className="grid grid-cols-2 py-4 items-center">
               <div className="mb-2 block">
                 <Label
-                  htmlFor="termId"
-                  value="Term"
-                  color={`${errors.termId ? "failure" : "gray"}`}
+                  htmlFor="amountDue"
+                  value="Amount Due"
+                  className="font-semibold"
                 />
               </div>
-              <Controller
-                control={control}
-                name="termId"
-                defaultValue={objData?.termId}
-                render={({ field }) => (
-                  <div>
-                    <Select
-                      id="termId"
-                      value={field.value}
-                      color={`${errors.termId ? "failure" : "gray"}`}
-                      required={true}
-                      helperText={errors.termId?.message}
-                      {...field}
-                    >
-                      <option value={0} disabled>
-                        Select Term
-                      </option>
-                      {termList?.map((option) => (
-                        <option key={option.id} value={option.id}>
-                          {option.name}
-                        </option>
-                      ))}
-                    </Select>
-                  </div>
-                )}
+
+              <TextInput
+                key={feeAmountDue}
+                value={
+                  feeAmountDue
+                    ? `KES ${new Intl.NumberFormat().format(feeAmountDue)}`
+                    : 'KES 0.00'
+                }
+                placeholder="KES. 0.00"
+                readOnly // If you don't want the user to edit the amount
               />
             </div>
+
             {/* PAYMENT MODE */}
             <div>
               <Label
                 htmlFor="payment_mode"
                 value="Payment Mode"
-                color={`${errors.payment_mode ? "failure" : "gray"}`}
+                color={`${errors.payment_mode ? 'failure' : 'gray'}`}
               />
               <div className="py-3 grid grid-cols-2 gap-2">
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "MPESA" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'MPESA' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -270,8 +257,8 @@ const PaymentUpdate = ({
                       value="MPESA"
                       defaultChecked={true}
                       onChange={() => {
-                        setPaymentMode("MPESA");
-                        setValue("payment_mode", "MPESA");
+                        setPaymentMode('MPESA');
+                        setValue('payment_mode', 'MPESA');
                       }}
                       className="text-sm"
                     />
@@ -283,7 +270,7 @@ const PaymentUpdate = ({
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "BANK" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'BANK' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -292,8 +279,8 @@ const PaymentUpdate = ({
                       value="BANK"
                       defaultChecked={false}
                       onChange={() => {
-                        setPaymentMode("BANK");
-                        setValue("payment_mode", "BANK");
+                        setPaymentMode('BANK');
+                        setValue('payment_mode', 'BANK');
                       }}
                       className="text-sm"
                     />
@@ -305,7 +292,7 @@ const PaymentUpdate = ({
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "CASH" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'CASH' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -314,8 +301,8 @@ const PaymentUpdate = ({
                       value="CASH"
                       defaultChecked={false}
                       onChange={() => {
-                        setPaymentMode("CASH");
-                        setValue("payment_mode", "CASH");
+                        setPaymentMode('CASH');
+                        setValue('payment_mode', 'CASH');
                       }}
                       className="text-sm"
                     />
@@ -327,7 +314,7 @@ const PaymentUpdate = ({
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 ${
-                      paymentMode === "CHEQUE" ? "bg-purple-100" : "bg-white"
+                      paymentMode === 'CHEQUE' ? 'bg-purple-100' : 'bg-white'
                     }`}
                   >
                     <Radio
@@ -336,8 +323,8 @@ const PaymentUpdate = ({
                       value="CHEQUE"
                       defaultChecked={false}
                       onChange={() => {
-                        setPaymentMode("CHEQUE");
-                        setValue("payment_mode", "CHEQUE");
+                        setPaymentMode('CHEQUE');
+                        setValue('payment_mode', 'CHEQUE');
                       }}
                       className="text-sm"
                     />
@@ -353,7 +340,7 @@ const PaymentUpdate = ({
                 <Label
                   htmlFor="amount"
                   value="Amount"
-                  color={errors.amount ? "failure" : "gray"}
+                  color={errors.amount ? 'failure' : 'gray'}
                 />
               </div>
               <Controller
@@ -365,7 +352,7 @@ const PaymentUpdate = ({
                     id="amount"
                     placeholder="Amount"
                     required={true}
-                    color={errors.amount ? "failure" : "gray"}
+                    color={errors.amount ? 'failure' : 'gray'}
                     helperText={errors.amount?.message}
                     type="number"
                     value={field.value}
@@ -379,7 +366,7 @@ const PaymentUpdate = ({
                 <Label
                   htmlFor="reference"
                   value="Reference"
-                  color={errors.reference ? "failure" : "gray"}
+                  color={errors.reference ? 'failure' : 'gray'}
                 />
               </div>
               <Controller
@@ -391,7 +378,7 @@ const PaymentUpdate = ({
                     id="reference"
                     placeholder="Reference"
                     required={true}
-                    color={errors.reference ? "failure" : "gray"}
+                    color={errors.reference ? 'failure' : 'gray'}
                     helperText={errors.reference?.message}
                     {...field}
                   />

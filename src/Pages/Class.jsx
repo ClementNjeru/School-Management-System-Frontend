@@ -4,16 +4,16 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import { HiCheck } from "react-icons/hi";
-import { IoMdClose } from "react-icons/io";
+} from 'react';
+import { HiCheck } from 'react-icons/hi';
+import { IoMdClose } from 'react-icons/io';
 import MaterialReactTable, {
   MRT_FullScreenToggleButton,
   MRT_GlobalFilterTextField,
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
-} from "material-react-table";
+} from 'material-react-table';
 
 import {
   Box,
@@ -26,25 +26,22 @@ import {
   Pagination,
   Toolbar,
   Tooltip,
-} from "@mui/material";
+} from '@mui/material';
 
-import RefreshIcon from "@mui/icons-material/Refresh";
-import { Delete, Edit } from "@mui/icons-material";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Toast } from "flowbite-react";
-import ClassCreate from "../Components/modals/ClassCreate";
-import axios from "axios";
-import ClassUpdate from "../Components/modals/ClassUpdate";
-const KES = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "KES",
-});
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { Delete, Edit } from '@mui/icons-material';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, Toast } from 'flowbite-react';
+import ClassCreate from '../Components/modals/ClassCreate';
+import axios from 'axios';
+import ClassUpdate from '../Components/modals/ClassUpdate';
+
 const Class = () => {
   const queryClient = useQueryClient();
   const [columnFilters, setColumnFilters] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
   const tableInstanceRef = useRef(null);
   const [sorting, setSorting] = useState([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -59,7 +56,7 @@ const Class = () => {
 
   const { data, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
-      "classes-data",
+      'classes-data',
 
       columnFilters, //refetch when columnFilters changes
 
@@ -76,20 +73,20 @@ const Class = () => {
       const fetchURL = new URL(`${process.env.REACT_APP_BASE_URL}/classes`);
 
       fetchURL.searchParams.set(
-        "start",
+        'start',
 
         `${pagination.pageIndex * pagination.pageSize}`
       );
 
-      fetchURL.searchParams.set("size", `${pagination.pageSize}`);
+      fetchURL.searchParams.set('size', `${pagination.pageSize}`);
 
-      fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
+      fetchURL.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
 
       if (globalFilter) {
         fetchURL.pathname = `/api/classes/search/${globalFilter}`;
       }
 
-      fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+      fetchURL.searchParams.set('sorting', JSON.stringify(sorting ?? []));
 
       const response = await fetch(fetchURL.href);
 
@@ -107,47 +104,23 @@ const Class = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
+        accessorKey: 'id',
 
-        header: "Id",
+        header: 'Id',
       },
       {
-        accessorKey: "name",
+        accessorKey: 'name',
 
-        header: "Name",
+        header: 'Name',
       },
 
       {
         accessorKey: `Teacher`,
 
-        header: "Class Teacher",
+        header: 'Class Teacher',
         Cell: ({ cell }) => {
           const teacher = cell.getValue() ?? {};
           return `${teacher?.first_name} ${teacher?.last_name}`;
-        },
-      },
-      {
-        accessorKey: "term_1",
-        header: "Term 1 Fee",
-        Cell: ({ cell }) => {
-          const termFee = cell.getValue() ?? 0;
-          return KES.format(Number(termFee) ?? 0);
-        },
-      },
-      {
-        accessorKey: "term_2",
-        header: "Term 2 Fee",
-        Cell: ({ cell }) => {
-          const termFee = cell.getValue() ?? 0;
-          return KES.format(Number(termFee) ?? 0);
-        },
-      },
-      {
-        accessorKey: "term_3",
-        header: "Term 3 Fee",
-        Cell: ({ cell }) => {
-          const termFee = cell.getValue() ?? 0;
-          return KES.format(Number(termFee) ?? 0);
         },
       },
     ],
@@ -155,13 +128,13 @@ const Class = () => {
     []
   );
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const deletePost = useMutation((id) => {
     return axios
       .delete(`${process.env.REACT_APP_BASE_URL}/class/${id}`)
       .then(() => {
-        queryClient.invalidateQueries(["classes-data"]);
+        queryClient.invalidateQueries(['classes-data']);
         setShowSuccessToast(true);
         refetch();
       })
@@ -174,7 +147,7 @@ const Class = () => {
         ) {
           setErrorMessage(error.response.data.message);
         } else {
-          setErrorMessage("An error occurred while deleting the Class.");
+          setErrorMessage('An error occurred while deleting the Class.');
         }
       });
   });
@@ -190,7 +163,7 @@ const Class = () => {
   };
   const handleConfirmDelete = () => {
     if (rowToDelete) {
-      deletePost.mutate(rowToDelete.getValue("id"));
+      deletePost.mutate(rowToDelete.getValue('id'));
       tableData.splice(rowToDelete.index, 1);
     }
     setOpenConfirmDialog(false);
@@ -229,23 +202,23 @@ const Class = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={() => ({
-              backgroundColor: "#ede7f6",
+              backgroundColor: '#ede7f6',
 
-              borderRadius: "4px",
+              borderRadius: '4px',
 
-              display: "flex",
+              display: 'flex',
 
               flexDirection: {
-                xs: "column",
+                xs: 'column',
 
-                lg: "row",
+                lg: 'row',
               },
 
-              gap: "1rem",
+              gap: '1rem',
 
-              justifyContent: "space-between",
+              justifyContent: 'space-between',
 
-              p: "1.5rem 0",
+              p: '1.5rem 0',
             })}
           >
             <Box className="gap-3 flex items-center">
@@ -287,9 +260,9 @@ const Class = () => {
           muiToolbarAlertBannerProps={
             isError
               ? {
-                  color: "error",
+                  color: 'error',
 
-                  children: "Error loading data",
+                  children: 'Error loading data',
                 }
               : undefined
           }
@@ -307,7 +280,7 @@ const Class = () => {
             </>
           )}
           renderRowActions={({ row }) => (
-            <Box sx={{ display: "flex", gap: "1rem" }}>
+            <Box sx={{ display: 'flex', gap: '1rem' }}>
               <Tooltip arrow placement="left" title="Edit">
                 <IconButton
                   onClick={() => {
@@ -346,16 +319,16 @@ const Class = () => {
           {...(tableInstanceRef.current && (
             <Toolbar
               sx={{
-                display: "flex",
+                display: 'flex',
 
-                justifyContent: "center",
+                justifyContent: 'center',
 
-                flexDirection: "column",
+                flexDirection: 'column',
               }}
             >
               <Box
                 className="place-items-center"
-                sx={{ display: "grid", width: "100%" }}
+                sx={{ display: 'grid', width: '100%' }}
               >
                 <Pagination
                   variant="outlined"
@@ -378,16 +351,16 @@ const Class = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={{
-              display: "flex",
+              display: 'flex',
 
-              justifyContent: "center",
+              justifyContent: 'center',
 
-              flexDirection: "column",
+              flexDirection: 'column',
             }}
           >
             <Box
               className="place-items-center"
-              sx={{ display: "grid", width: "100%" }}
+              sx={{ display: 'grid', width: '100%' }}
             >
               <Pagination
                 variant="outlined"
@@ -424,7 +397,7 @@ const Class = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{'Confirm Deletion'}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete this guest?

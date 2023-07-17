@@ -1,28 +1,21 @@
-import {
-  Button,
-  Checkbox,
-  Label,
-  Modal,
-  Select,
-  TextInput,
-} from "flowbite-react";
-import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import ReactDatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { Button, Label, Modal, Select, TextInput } from 'flowbite-react';
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import ReactDatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const gender = [
   {
-    name: "MALE",
-    id: "MALE",
+    name: 'MALE',
+    id: 'MALE',
   },
   {
-    name: "FEMALE",
-    id: "FEMALE",
+    name: 'FEMALE',
+    id: 'FEMALE',
   },
 ];
 
@@ -32,19 +25,20 @@ const StudentCreate = ({
   setShowErrorToast,
   setShowSuccessToast,
 }) => {
-  const [additionalPayments, setAdditionalPayments] = useState({
-    food_fee: false,
-    bus_fee: false,
-    boarding_fee: false,
-  });
-
   const FormSchema = z.object({
-    first_name: z.string().min(2, { message: "First name is required" }),
-    last_name: z.string().min(2, { message: "Last name is required" }),
+    first_name: z.string().min(2, { message: 'First name is required' }),
+    last_name: z.string().min(2, { message: 'Last name is required' }),
     dob: z.date(),
+    feeAmount: z.number().refine((value) => value >= 0, {
+      message: 'Amount total must be a non-negative number',
+    }),
+    guardianName: z.string().min(2, { message: 'Last name is required' }),
+    guardianPhone: z
+      .string()
+      .regex(/^(\+?\d{2,3})?0?\d{9}$/, { message: 'Invalid phone number' }),
     gender: z
-      .enum(["MALE", "FEMALE"])
-      .refine((value) => value === "MALE" || value === "FEMALE", {
+      .enum(['MALE', 'FEMALE'])
+      .refine((value) => value === 'MALE' || value === 'FEMALE', {
         message: "Gender must be FEMALE' or 'MALE'",
       }),
     // classId: z.string().min(1, { message: "Class is required" }),
@@ -58,18 +52,21 @@ const StudentCreate = ({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(FormSchema),
-    reValidateMode: "onChange",
+    reValidateMode: 'onChange',
   });
   const queryClient = useQueryClient();
 
   // reset form
   useEffect(() => {
     reset({
-      first_name: "",
-      last_name: "",
-      dob: "",
+      first_name: '',
+      last_name: '',
+      dob: '',
       classId: 0,
-      gender: "MALE",
+      gender: 'MALE',
+      feeAmount: 0,
+      guardianName: '',
+      guardianPhone: '',
     });
   }, [reset]);
 
@@ -81,10 +78,10 @@ const StudentCreate = ({
       );
       return response.data.grade;
     } catch (error) {
-      throw new Error("Error fetching guest data");
+      throw new Error('Error fetching guest data');
     }
   };
-  const { data: classList } = useQuery(["class-data"], fetchClassList, {
+  const { data: classList } = useQuery(['class-data'], fetchClassList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
@@ -92,12 +89,11 @@ const StudentCreate = ({
     (newPost) =>
       axios.post(`${process.env.REACT_APP_BASE_URL}/students/post`, {
         ...newPost,
-        additionalPayments,
       }),
     {
       onSuccess: () => {
         setShowSuccessToast(true);
-        queryClient.invalidateQueries(["students-data"]);
+        queryClient.invalidateQueries(['students-data']);
         reset();
 
         onClose();
@@ -108,7 +104,7 @@ const StudentCreate = ({
     }
   );
 
-  const classId = watch("classId") ?? "0";
+  const classId = watch('classId') ?? '0';
   const { isLoading } = createPost;
   const onSubmit = async (data) => {
     try {
@@ -137,7 +133,7 @@ const StudentCreate = ({
                   <Label
                     htmlFor="first_name"
                     value="First Name"
-                    color={errors.first_name ? "failure" : "gray"}
+                    color={errors.first_name ? 'failure' : 'gray'}
                   />
                 </div>
                 <Controller
@@ -149,7 +145,7 @@ const StudentCreate = ({
                       id="first_name"
                       placeholder="First name"
                       required={true}
-                      color={errors.first_name ? "failure" : "gray"}
+                      color={errors.first_name ? 'failure' : 'gray'}
                       helperText={errors.first_name?.message}
                       {...field}
                     />
@@ -161,7 +157,7 @@ const StudentCreate = ({
                   <Label
                     htmlFor="last_name"
                     value="Last Name"
-                    color={errors.last_name ? "failure" : "gray"}
+                    color={errors.last_name ? 'failure' : 'gray'}
                   />
                 </div>
                 <Controller
@@ -173,7 +169,7 @@ const StudentCreate = ({
                       id="last_name"
                       placeholder="Last name"
                       required={true}
-                      color={errors.last_name ? "failure" : "gray"}
+                      color={errors.last_name ? 'failure' : 'gray'}
                       helperText={errors.last_name?.message}
                       {...field}
                     />
@@ -227,7 +223,7 @@ const StudentCreate = ({
                   <Label
                     htmlFor="gender"
                     value="Gender"
-                    color={`${errors.gender ? "failure" : "gray"}`}
+                    color={`${errors.gender ? 'failure' : 'gray'}`}
                   />
                 </div>
                 <Controller
@@ -239,7 +235,7 @@ const StudentCreate = ({
                       <Select
                         id="gender"
                         value={field.value}
-                        color={`${errors.gender ? "failure" : "gray"}`}
+                        color={`${errors.gender ? 'failure' : 'gray'}`}
                         {...field}
                         helperText={errors.gender?.message}
                         required={true}
@@ -268,20 +264,20 @@ const StudentCreate = ({
                   <Label
                     htmlFor="classId"
                     value="Class / Grade"
-                    color={`${errors.classId ? "failure" : "gray"}`}
+                    color={`${errors.classId ? 'failure' : 'gray'}`}
                   />
                 </div>
                 <Controller
                   control={control}
                   name="classId"
-                  defaultValue={"0"}
+                  defaultValue={'0'}
                   render={({ field }) => (
                     <div>
                       <Select
                         id="classId"
                         // type="number"
                         value={field.value}
-                        color={`${errors.classId ? "failure" : "gray"}`}
+                        color={`${errors.classId ? 'failure' : 'gray'}`}
                         required={true}
                         helperText={errors.classId?.message}
                         {...field}
@@ -300,96 +296,83 @@ const StudentCreate = ({
                 />
               </div>
             </div>
-            {/* additional subscription checkboxes (food,bus_fee,boarding) */}
-            <div className="py-2">
-              <Label>Additional Payments</Label>
-              <div className="grid grid-cols-3 gap-[3px] ">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 gap-2 ${
-                      additionalPayments?.bus_fee ? "bg-purple-100" : "bg-white"
-                    }
-                    `}
-                  >
-                    <Checkbox
-                      className="ring-0 focus:ring-0"
-                      id="bus_fee"
-                      checked={additionalPayments?.bus_fee}
-                      onChange={(e) => {
-                        setAdditionalPayments({
-                          ...additionalPayments,
-                          bus_fee: e.target.checked,
-                        });
-                      }}
-                    />
-                    <Label
-                      className="text-xs whitespace-nowrap"
-                      htmlFor="bus_fee"
-                    >
-                      Bus Fee
-                    </Label>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer hover:bg-gray-200 gap-2 ${
-                      additionalPayments?.boarding_fee
-                        ? "bg-purple-100"
-                        : "bg-white"
-                    }
-                    `}
-                  >
-                    <Checkbox
-                      className="ring-0 focus:ring-0"
-                      id="boarding_fee"
-                      checked={additionalPayments?.boarding_fee}
-                      onChange={(e) => {
-                        setAdditionalPayments({
-                          ...additionalPayments,
-                          boarding_fee: e.target.checked,
-                        });
-                      }}
-                    />
-                    <Label
-                      className="text-xs whitespace-nowrap"
-                      htmlFor="boarding_fee"
-                    >
-                      Boarding Fee
-                    </Label>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-full border border-gray-300 p-2 rounded-md  flex items-center cursor-pointer
-                    gap-2
-                    hover:bg-gray-200 ${
-                      additionalPayments?.food_fee
-                        ? "bg-purple-100"
-                        : "bg-white"
-                    }
-                    `}
-                  >
-                    <Checkbox
-                      className="ring-0 focus:ring-0"
-                      id="food_fee"
-                      checked={additionalPayments?.food_fee}
-                      onChange={(e) => {
-                        setAdditionalPayments({
-                          ...additionalPayments,
-                          food_fee: e.target.checked,
-                        });
-                      }}
-                    />
-                    <Label
-                      className="text-xs whitespace-nowrap"
-                      htmlFor="food_fee"
-                    >
-                      Food Fee
-                    </Label>
-                  </div>
-                </div>
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="guardianName"
+                  value="Guardian Name"
+                  color={errors.guardianName ? 'failure' : 'gray'}
+                />
               </div>
+              <Controller
+                control={control}
+                name="guardianName"
+                defaultValue=""
+                render={({ field }) => (
+                  <TextInput
+                    id="guardianName"
+                    placeholder="Guardian name"
+                    required={true}
+                    color={errors.guardianName ? 'failure' : 'gray'}
+                    helperText={errors.guardianName?.message}
+                    {...field}
+                  />
+                )}
+              />
             </div>
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="guardianPhone"
+                  value="Guardian Phone"
+                  color={errors.guardianPhone ? 'failure' : 'gray'}
+                />
+              </div>
+              <Controller
+                control={control}
+                name="guardianPhone"
+                defaultValue=""
+                render={({ field }) => (
+                  <TextInput
+                    id="guardianPhone"
+                    placeholder="0700000000"
+                    required={true}
+                    color={errors.guardianPhone ? 'failure' : 'gray'}
+                    helperText={errors.guardianPhone?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+
+            {/* Set fee payment amount */}
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="feeAmount"
+                  value="Amount"
+                  color={errors.feeAmount ? 'failure' : 'gray'}
+                />
+              </div>
+              <Controller
+                control={control}
+                name="feeAmount"
+                defaultValue={0}
+                render={({ field }) => (
+                  <TextInput
+                    id="feeAmount"
+                    type="number"
+                    placeholder="Amount"
+                    required={true}
+                    color={errors.amount ? 'failure' : 'gray'}
+                    helperText={errors.feeAmount?.message}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  />
+                )}
+              />
+            </div>
+
             <div className="w-full mt-3 flex items-end">
               <Button
                 className="ml-auto"

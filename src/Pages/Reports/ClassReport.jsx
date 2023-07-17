@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import MaterialReactTable, {
   MRT_FullScreenToggleButton,
@@ -6,31 +6,24 @@ import MaterialReactTable, {
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
-} from "material-react-table";
-import { format } from "date-fns";
+} from 'material-react-table';
 
-import {
-  Box,
-  IconButton,
-  Pagination,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-
-import RefreshIcon from "@mui/icons-material/Refresh";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-const KES = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "KES",
+import { Box, IconButton, Pagination, Toolbar, Tooltip } from '@mui/material';
+import { ExportToCsv } from 'export-to-csv';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+const KES = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'KES',
 });
 
 const StudentClassReport = () => {
   const [columnFilters, setColumnFilters] = useState([]);
 
   const [tableData, setTableData] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
   const tableInstanceRef = useRef(null);
   const [sorting, setSorting] = useState([]);
 
@@ -51,16 +44,16 @@ const StudentClassReport = () => {
       );
       return response.data.grade;
     } catch (error) {
-      throw new Error("Error fetching class data");
+      throw new Error('Error fetching class data');
     }
   };
-  const { data: classList } = useQuery(["classes-data"], fetchTeachersList, {
+  const { data: classList } = useQuery(['classes-data'], fetchTeachersList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
   const { data, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
-      "class-data",
+      'class-data',
 
       columnFilters, //refetch when columnFilters changes
 
@@ -79,18 +72,18 @@ const StudentClassReport = () => {
       );
 
       fetchURL.searchParams.set(
-        "start",
+        'start',
 
         `${pagination.pageIndex * pagination.pageSize}`
       );
 
-      fetchURL.searchParams.set("size", `${pagination.pageSize}`);
+      fetchURL.searchParams.set('size', `${pagination.pageSize}`);
 
-      fetchURL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
+      fetchURL.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
 
-      fetchURL.searchParams.set("globalFilter", globalFilter ?? "");
+      fetchURL.searchParams.set('globalFilter', globalFilter ?? '');
 
-      fetchURL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+      fetchURL.searchParams.set('sorting', JSON.stringify(sorting ?? []));
 
       const response = await fetch(fetchURL.href);
 
@@ -114,64 +107,107 @@ const StudentClassReport = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
+        accessorKey: 'id',
 
-        header: "Id",
+        header: 'Id',
       },
       {
-        accessorKey: "first_name",
-
-        header: "First Name",
-      },
-
-      {
-        accessorKey: "last_name",
-
-        header: "Last Name",
+        accessorKey: 'first_name',
+        header: 'Student Name',
+        Cell: ({ row }) => {
+          return `${row.original.first_name} ${row.original.last_name}`;
+        },
       },
 
       {
-        accessorKey: "dob",
+        accessorKey: 'guardianName',
 
-        header: "DOB",
+        header: 'Guardian Name',
+      },
+      {
+        accessorKey: 'guardianPhone',
+
+        header: 'Guardian Phone',
+      },
+      {
+        accessorKey: 'Class.name',
+
+        header: 'Class',
+      },
+      {
+        accessorKey: 'feeAmount',
+
+        header: 'Total Fee',
+        size: 50,
         Cell: ({ cell }) => {
-          const dateTime = cell.getValue?.();
-          return dateTime ? format(new Date(dateTime), "yyyy-MM-dd") : "";
+          return `${KES.format(cell.getValue() ?? 0)}`;
         },
       },
-      {
-        accessorKey: "Class.name",
 
-        header: "Class",
-      },
       {
-        accessorKey: "StudentTermFee[0]", // Update the index based on the correct position in the array
+        accessorKey: 'feeBalance',
 
-        header: "Total Fee",
+        header: 'Fee Balance',
         size: 50,
-        Cell: ({ row }) => {
-          const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
-          const totalFee = studentTermFee
-            ? Number(studentTermFee.total_fee)
-            : 0;
-          return `${KES.format(totalFee)}`;
-        },
-      },
-      {
-        accessorKey: "StudentTermFee[0]", // Update the index based on the correct position in the array
-
-        header: "Fee Balance",
-        size: 50,
-        Cell: ({ row }) => {
-          const studentTermFee = row.original.StudentTermFee[0]; // Access the correct index
-          const balance = studentTermFee ? Number(studentTermFee.balance) : 0;
-          return `${KES.format(balance)}`;
+        Cell: ({ cell }) => {
+          return `${KES.format(cell.getValue() ?? 0)}`;
         },
       },
     ],
 
     []
   );
+
+  // export to csv
+  const csvOptions = {
+    fieldSeparator: ',',
+
+    quoteStrings: '"',
+
+    decimalSeparator: '.',
+
+    showLabels: true,
+
+    useBom: true,
+
+    useKeysAsHeaders: false,
+
+    headers: columns?.map((c) => c.header),
+  };
+
+  const csvExporterRef = useRef(null);
+
+  if (!csvExporterRef.current) {
+    csvExporterRef.current = new ExportToCsv(csvOptions);
+  }
+
+  const handleExportRows = (rows) => {
+    csvExporterRef.current.generateCsv(rows?.map((row) => row.original));
+  };
+
+  const transformDataForCsv = (items) => {
+    return items?.map((item) => {
+      // Modify this object based on the structure of your `item`
+      return {
+        Id: item.id,
+        'Student Name': `${item.first_name} ${item.last_name}`,
+        'Guardian Name': item.guardianName,
+        'Guardian Phone': item.guardianPhone,
+        Grade: item.Class.name,
+        'Fee Total': item.feeAmount,
+        'Fee Balance': item.feeBalance,
+      };
+    });
+  };
+
+  const handleExportData = () => {
+    if (data) {
+      const transformedData = transformDataForCsv(data.items);
+      csvExporterRef.current.generateCsv(transformedData);
+    } else {
+      console.error('Data is undefined.');
+    }
+  };
 
   //column definitions...
   return (
@@ -183,23 +219,23 @@ const StudentClassReport = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={() => ({
-              backgroundColor: "#ede7f6",
+              backgroundColor: '#ede7f6',
 
-              borderRadius: "4px",
+              borderRadius: '4px',
 
-              display: "flex",
+              display: 'flex',
 
               flexDirection: {
-                xs: "column",
+                xs: 'column',
 
-                lg: "row",
+                lg: 'row',
               },
 
-              gap: "1rem",
+              gap: '1rem',
 
-              justifyContent: "space-between",
+              justifyContent: 'space-between',
 
-              p: "1.5rem 0",
+              p: '1.5rem 0',
             })}
           >
             <Box>
@@ -208,7 +244,7 @@ const StudentClassReport = () => {
                   title="Select a Class"
                   name="grade"
                   id="grade-select"
-                  value={selectedGrade ?? ""}
+                  value={selectedGrade ?? ''}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-10 py-2 appearance-none dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
@@ -240,6 +276,11 @@ const StudentClassReport = () => {
               <MRT_ToggleDensePaddingButton table={tableInstanceRef.current} />
 
               <MRT_FullScreenToggleButton table={tableInstanceRef.current} />
+              <Tooltip arrow title="Export to SVG">
+                <IconButton onClick={handleExportData}>
+                  <FileDownloadIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Toolbar>
         )}
@@ -258,9 +299,9 @@ const StudentClassReport = () => {
           muiToolbarAlertBannerProps={
             isError
               ? {
-                  color: "error",
+                  color: 'error',
 
-                  children: "Error loading data",
+                  children: 'Error loading data',
                 }
               : undefined
           }
@@ -294,50 +335,19 @@ const StudentClassReport = () => {
 
             sorting,
           }}
-          renderDetailPanel={({ row }) => (
-            <Box
-              sx={{
-                display: "grid",
-
-                margin: "auto",
-
-                gridTemplateColumns: "1fr",
-
-                width: "100%",
-              }}
-            >
-              <Typography>
-                Tuition Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.tuition_fee ?? 0)}
-              </Typography>
-              <Typography>
-                Bus Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.bus_fee ?? 0)}
-              </Typography>
-              <Typography>
-                Boarding Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.boarding_fee ?? 0)}
-              </Typography>
-              <Typography>
-                Food Fee:{" "}
-                {KES.format(row.original?.StudentTermFee[0]?.food_fee ?? 0)}
-              </Typography>
-              <Typography>Status: {row.original?.status}</Typography>
-            </Box>
-          )}
           {...(tableInstanceRef.current && (
             <Toolbar
               sx={{
-                display: "flex",
+                display: 'flex',
 
-                justifyContent: "center",
+                justifyContent: 'center',
 
-                flexDirection: "column",
+                flexDirection: 'column',
               }}
             >
               <Box
                 className="place-items-center"
-                sx={{ display: "grid", width: "100%" }}
+                sx={{ display: 'grid', width: '100%' }}
               >
                 <Pagination
                   variant="outlined"
@@ -360,16 +370,16 @@ const StudentClassReport = () => {
         {tableInstanceRef.current && (
           <Toolbar
             sx={{
-              display: "flex",
+              display: 'flex',
 
-              justifyContent: "center",
+              justifyContent: 'center',
 
-              flexDirection: "column",
+              flexDirection: 'column',
             }}
           >
             <Box
               className="place-items-center"
-              sx={{ display: "grid", width: "100%" }}
+              sx={{ display: 'grid', width: '100%' }}
             >
               <Pagination
                 variant="outlined"
