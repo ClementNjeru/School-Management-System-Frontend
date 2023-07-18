@@ -5,6 +5,8 @@ import Stats from '../Components/Cards/Stats';
 import PaymentModesPie from '../Components/Cards/DataPie';
 // import FeeData from '../Components/Cards/FeeData';
 import BarChart  from '../Components/Cards/BarChart';
+import { Box, IconButton, Pagination, Toolbar, Tooltip } from '@mui/material';
+
 
 const Dashboard = () => {
   const fetchData = async () => {
@@ -65,18 +67,10 @@ const Dashboard = () => {
         <PaymentModesPie paymentModes={paymentModes} isLoading={isLoading} />
        
         <BarChart isLoading={isLoading} />
-   
-
-        {/* <div className="">
-          <FeeData feePayments={feePayments} isLoading={isLoading} />
-        </div> */}
+  
       </div>
 
-      
-      {/*
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
 
-      </div> */}
     </section>
   );
 };

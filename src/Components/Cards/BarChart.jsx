@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Bar } from 'recharts';
 import { Box, IconButton, Pagination, Toolbar, Tooltip } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 // import axios from 'axios';
@@ -22,7 +22,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+    <text x={x} y={y} fill="grey" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
       {`${(percent * 100).toFixed(0)}%`}
     </text>
   );
@@ -45,27 +45,27 @@ function Chart() {
       <p className="text-gray-700 font-semibold">Payment Status Per Class</p>
 
       <Box>
-          <div className="flex justify-between">
-              <div className="flex">
-                <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-10 py-2 appearance-none dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                   title = "Select Class"
-                   name='grade'
-                    id='grade'
-                    value={selectedGrade ?? ''}
-                    onChange={handleChange}
-                >
-                  
-                  <option value="">Select Class</option>
-                  {classList?.map((grade) => (
-                    <option key={grade?.id} value={grade?.id}>
-                      {grade?.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+        <div className="flex justify-between">
+          <div className="flex">
+            <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-10 py-2 appearance-none dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              title="Select Class"
+              name='grade'
+              id='grade'
+              value={selectedGrade ?? ''}
+              onChange={handleChange}
+            >
+
+              <option value="">Select Class</option>
+              {classList?.map((grade) => (
+                <option key={grade?.id} value={grade?.id}>
+                  {grade?.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </Box>
-      <PieChart width={400} height={400}>
+      <PieChart width={450} height={300}>
         <Pie
           data={data}
           cx="50%"
@@ -74,7 +74,7 @@ function Chart() {
           label={renderCustomizedLabel}
           outerRadius={80}
           fill="#8884d8"
-          dataKey= "value"
+          dataKey="value"
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -82,7 +82,7 @@ function Chart() {
         </Pie>
       </PieChart>
     </div>
-
+    
   );
 }
 export default Chart;
