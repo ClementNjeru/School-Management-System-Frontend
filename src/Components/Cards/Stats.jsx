@@ -9,7 +9,7 @@ const Stats = ({
   guardiansCount,
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">
       {/* student  card */}
       {isLoading ? (
         <SkeletonLoader />
@@ -78,7 +78,7 @@ const Stats = ({
         </div>
       )}
       {/* parents card */}
-      {isLoading ? (
+      {/* {isLoading ? (
         <SkeletonLoader />
       ) : (
         <div className="grid grid-cols-2 bg-orange-100 shadow-md w-full h-28 rounded-lg">
@@ -109,7 +109,7 @@ const Stats = ({
             </div>
           </div>
         </div>
-      )}
+      )} */}
       {/* classes */}
       {isLoading ? (
         <SkeletonLoader />
