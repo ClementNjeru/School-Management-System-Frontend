@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import React from 'react';
+import {React, useState} from 'react';
 import Stats from '../Components/Cards/Stats';
 import PaymentModesPie from '../Components/Cards/DataPie';
 // import FeeData from '../Components/Cards/FeeData';
@@ -27,7 +27,7 @@ const Dashboard = () => {
           `${process.env.REACT_APP_BASE_URL}/payments/get/paymentmodes`
         ),
         // axios.get(
-        //   `${process.env.REACT_APP_BASE_URL}/student-fees/total/yearly`
+        //   `${process.env.REACT_APP_BASE_URL}/students/fee-status/${selectedGrade}}`
         // ),
       ]);
 
@@ -66,7 +66,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <PaymentModesPie paymentModes={paymentModes} isLoading={isLoading} />
        
-        <BarChart isLoading={isLoading} />
+        <BarChart isLoading={isLoading}/>
+
   
       </div>
 
