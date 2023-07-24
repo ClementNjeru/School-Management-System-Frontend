@@ -2,18 +2,16 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Bar } from 'recharts';
 import { Box, IconButton, Pagination, Toolbar, Tooltip } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-// import axios from 'axios';
+import axios from 'axios';
 
-
-
-
-const data = [
-  { name: 'Paid', value: 40 },
-  { name: 'Unpaid', value: 7 },
-  { name: 'Partial', value: 33 },
+const COLORS = [
+  "#9F7AEA",
+  "#4C51BF",
+  "#38B2AC",
+  "#ED8936",
+  "#FC8181",
+  "#4299E1",
 ];
-
-const COLORS = ['#FFFF00', '#00FF00', '#FF0000'];
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -29,14 +27,49 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
 function Chart() {
-
   const [selectedGrade, setSelectedGrade] = useState();
-  const { data: classList } = useQuery(['classes-data'], {
+
+  const fetchData = async () => {
+    try {
+      const [
+        feeResponce,
+      ] = await Promise.all([
+        
+        axios.get(
+          `${process.env.REACT_APP_BASE_URL}/students/fee-status/${selectedGrade}}`
+        ),
+      ]);
+
+      return {
+        feePayment: feeResponce.data,
+      };
+    } catch (error) {
+      throw new Error('Error fetching data');
+    }
+  };
+
+  const { data, isLoading } = useQuery(['dashboard-data'], fetchData);
+
+  const feePayments = data?.feePayment;
+
+
+  const fetchClassList = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/classes/all`
+      );
+      return response.data.grade;
+    } catch (error) {
+      throw new Error('Error fetching class data');
+    }
+  };
+  const { data: classList } = useQuery(['classes-data'], fetchClassList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
   const handleChange = (e) => {
     setSelectedGrade(e.target.value || null);
   };
+
 
 
   return (
@@ -67,7 +100,7 @@ function Chart() {
       </Box>
       <PieChart width={450} height={300}>
         <Pie
-          data={data}
+          data={feePayments || []}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -76,7 +109,7 @@ function Chart() {
           fill="#8884d8"
           dataKey="value"
         >
-          {data.map((entry, index) => (
+          {feePayments.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
