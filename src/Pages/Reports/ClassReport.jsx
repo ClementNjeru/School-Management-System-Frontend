@@ -37,7 +37,7 @@ const StudentClassReport = () => {
     setSelectedGrade(e.target.value || null);
   };
 
-  const fetchTeachersList = async () => {
+  const fetchClassList = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}/classes/all`
@@ -47,7 +47,7 @@ const StudentClassReport = () => {
       throw new Error('Error fetching class data');
     }
   };
-  const { data: classList } = useQuery(['classes-data'], fetchTeachersList, {
+  const { data: classList } = useQuery(['classes-data'], fetchClassList, {
     cacheTime: 10 * 60 * 1000, // cache for 10 minutes
   });
 
