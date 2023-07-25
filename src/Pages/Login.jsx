@@ -5,20 +5,19 @@ import {
   Label,
   TextInput,
   Toast,
-} from "flowbite-react";
-import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { HiMail, HiEyeOff, HiEye } from "react-icons/hi";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
-import { HiCheck } from "react-icons/hi";
-import { IoMdClose } from "react-icons/io";
-import { Link } from "react-router-dom";
+} from 'flowbite-react';
+import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { HiMail, HiEyeOff, HiEye } from 'react-icons/hi';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
+import { HiCheck } from 'react-icons/hi';
+import { IoMdClose } from 'react-icons/io';
+import { Link } from 'react-router-dom';
 // import { HiEye, HiEyeOff } from "react-icons/hi";
-
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,8 +25,8 @@ const Login = () => {
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const FormSchema = z.object({
-    email: z.string().email({ message: "Invalid email formart" }),
-    password: z.string({ message: "Password is required" }),
+    email: z.string().email({ message: 'Invalid email formart' }),
+    password: z.string({ message: 'Password is required' }),
   });
 
   const {
@@ -37,11 +36,11 @@ const Login = () => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(FormSchema),
-    reValidateMode: "onChange",
+    reValidateMode: 'onChange',
   });
 
   // hash local storage
-  const STORAGE_KEY = "authObject";
+  const STORAGE_KEY = 'authObject';
 
   // Save data in local storage
   function saveData(data) {
@@ -56,7 +55,7 @@ const Login = () => {
         // pass data
         // signIn(response?.data);
         const expiresAt = Date.now() + 60 * 60 * 1000; // set expiration time to 1 hour from now
-        if (typeof window !== "undefined") {
+        if (typeof window !== 'undefined') {
           const authObject = {
             authenticated: true,
             token: response?.data?.token,
@@ -70,10 +69,10 @@ const Login = () => {
         }
         setShowSuccessToast(true);
         // if role=ADMIN push to dashboard else push to calendar
-        if (response?.data?.role === "ADMIN") {
-          navigate("dashboard");
+        if (response?.data?.role === 'ADMIN') {
+          navigate('dashboard');
         } else {
-          navigate("dashboard");
+          navigate('dashboard');
         }
 
         reset();
@@ -117,37 +116,37 @@ const Login = () => {
   }, [showSuccessToast, showErrorToast]);
 
   return (
-    <section className="bg-purple-50 grid place-items-center h-[100vh]">
-      <div className="w-80">
+    <section className='bg-purple-50 grid place-items-center h-[100vh]'>
+      <div className='w-80'>
         <Card>
-          <p className="mx-auto tracking-wide font-semibold text-lg">
-            Nakuru Vic Sch
+          <p className='mx-auto tracking-wide font-semibold text-lg'>
+            School Soft
           </p>
           <form
-            className="flex flex-col gap-4"
+            className='flex flex-col gap-4'
             onSubmit={handleSubmit(onSubmit)}
           >
             <div>
-              <div className="mb-2 block">
+              <div className='mb-2 block'>
                 <Label
-                  htmlFor="email1"
-                  value="Your email"
-                  color={errors.email ? "failure" : "gray"}
+                  htmlFor='email1'
+                  value='Your email'
+                  color={errors.email ? 'failure' : 'gray'}
                 />
               </div>
               <Controller
                 control={control}
-                name="email"
-                defaultValue=""
+                name='email'
+                defaultValue=''
                 render={({ field }) => (
                   <TextInput
-                    id="email1"
-                    type="email"
+                    id='email1'
+                    type='email'
                     shadow={true}
                     rightIcon={HiMail}
-                    placeholder="name@flowbite.com"
+                    placeholder='name@flowbite.com'
                     required={true}
-                    color={errors.email ? "failure" : "gray"}
+                    color={errors.email ? 'failure' : 'gray'}
                     helperText={errors.email?.message}
                     {...field}
                   />
@@ -158,59 +157,59 @@ const Login = () => {
               )} */}
             </div>
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="password1" value="Your password" />
+              <div className='mb-2 block'>
+                <Label htmlFor='password1' value='Your password' />
               </div>
-              <div className="relative">
+              <div className='relative'>
                 <Controller
                   control={control}
                   shadow={true}
-                  name="password"
-                  defaultValue=""
+                  name='password'
+                  defaultValue=''
                   render={({ field }) => (
                     <TextInput
-                      id="password1"
-                      type={showPassword ? "text" : "password"}
+                      id='password1'
+                      type={showPassword ? 'text' : 'password'}
                       required={true}
-                      color={errors.email ? "failure" : "gray"}
+                      color={errors.email ? 'failure' : 'gray'}
                       helperText={errors.password?.message}
                       {...field}
                     />
                   )}
                 />
                 <button
-                  type="button"
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                  type='button'
+                  className='absolute top-1/2 right-3 transform -translate-y-1/2'
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <HiEyeOff /> : <HiEye />}
                 </button>
               </div>
             </div>
-            <div className="flex justify-between">
-              <div className="flex items-center gap-2">
-                <Checkbox id="remember" />
-                <Label htmlFor="remember">Remember me</Label>
+            <div className='flex justify-between'>
+              <div className='flex items-center gap-2'>
+                <Checkbox id='remember' />
+                <Label htmlFor='remember'>Remember me</Label>
               </div>
               <Link
-                to="dashboard"
-                className="text-sm text-purple-600 hover:underline"
+                to='dashboard'
+                className='text-sm text-purple-600 hover:underline'
               >
                 Lost Password?
               </Link>
             </div>
-            <Button color="purple" type="submit" isProcessing={isLoading}>
+            <Button color='purple' type='submit' isProcessing={isLoading}>
               Submit
             </Button>
           </form>
         </Card>
       </div>
       {showSuccessToast && (
-        <Toast className="absolute bottom-4 left-4">
-          <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
-            <HiCheck className="h-5 w-5" />
+        <Toast className='absolute bottom-4 left-4'>
+          <div className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200'>
+            <HiCheck className='h-5 w-5' />
           </div>
-          <div className="ml-3 text-sm font-normal">
+          <div className='ml-3 text-sm font-normal'>
             Logged in successfully.
           </div>
           <Toast.Toggle onClick={() => setShowSuccessToast(false)} />
@@ -218,11 +217,11 @@ const Login = () => {
       )}
 
       {showErrorToast && (
-        <Toast className="absolute bottom-4 left-4">
-          <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-            <IoMdClose className="h-5 w-5" />
+        <Toast className='absolute bottom-4 left-4'>
+          <div className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200'>
+            <IoMdClose className='h-5 w-5' />
           </div>
-          <div className="ml-3 text-sm font-normal">
+          <div className='ml-3 text-sm font-normal'>
             Login failed. Please try again.
           </div>
           <Toast.Toggle onClick={() => setShowErrorToast(false)} />

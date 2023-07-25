@@ -35,6 +35,7 @@ import { Button, Toast } from 'flowbite-react';
 import ClassCreate from '../Components/modals/ClassCreate';
 import axios from 'axios';
 import ClassUpdate from '../Components/modals/ClassUpdate';
+import { useDebounce } from '../utils/hooks/useDebounce';
 
 const Class = () => {
   const queryClient = useQueryClient();
@@ -53,6 +54,8 @@ const Class = () => {
 
     pageSize: 10,
   });
+
+  const debounceSearch = useDebounce(globalFilter);
 
   const { data, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
@@ -82,8 +85,8 @@ const Class = () => {
 
       fetchURL.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
 
-      if (globalFilter) {
-        fetchURL.pathname = `/api/classes/search/${globalFilter}`;
+      if (debounceSearch) {
+        fetchURL.pathname = `/api/classes/search/${debounceSearch}`;
       }
 
       fetchURL.searchParams.set('sorting', JSON.stringify(sorting ?? []));
@@ -196,9 +199,9 @@ const Class = () => {
 
   //column definitions...
   return (
-    <section className="bg-white h-full w-full  p-4">
-      <h1 className="mb-4 font-semibold tracking-wide text-lg">Classs</h1>
-      <Box className="border-slate-200 rounded border-[1px] p-4">
+    <section className='bg-white h-full w-full  p-4'>
+      <h1 className='mb-4 font-semibold tracking-wide text-lg'>Classs</h1>
+      <Box className='border-slate-200 rounded border-[1px] p-4'>
         {tableInstanceRef.current && (
           <Toolbar
             sx={() => ({
@@ -221,11 +224,11 @@ const Class = () => {
               p: '1.5rem 0',
             })}
           >
-            <Box className="gap-3 flex items-center">
+            <Box className='gap-3 flex items-center'>
               <Button
                 onClick={() => setCreateModalOpen(true)}
                 outline={true}
-                gradientDuoTone="purpleToBlue"
+                gradientDuoTone='purpleToBlue'
               >
                 Add Class
               </Button>
@@ -272,7 +275,7 @@ const Class = () => {
           onSortingChange={setSorting}
           renderBottomToolbarCustomActions={() => (
             <>
-              <Tooltip arrow title="Refresh Data">
+              <Tooltip arrow title='Refresh Data'>
                 <IconButton onClick={() => refetch()}>
                   <RefreshIcon />
                 </IconButton>
@@ -281,7 +284,7 @@ const Class = () => {
           )}
           renderRowActions={({ row }) => (
             <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="left" title="Edit">
+              <Tooltip arrow placement='left' title='Edit'>
                 <IconButton
                   onClick={() => {
                     setUpdateModalOpen(true);
@@ -292,8 +295,8 @@ const Class = () => {
                 </IconButton>
               </Tooltip>
 
-              <Tooltip arrow placement="right" title="Delete">
-                <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+              <Tooltip arrow placement='right' title='Delete'>
+                <IconButton color='error' onClick={() => handleDeleteRow(row)}>
                   <Delete />
                 </IconButton>
               </Tooltip>
@@ -327,12 +330,12 @@ const Class = () => {
               }}
             >
               <Box
-                className="place-items-center"
+                className='place-items-center'
                 sx={{ display: 'grid', width: '100%' }}
               >
                 <Pagination
-                  variant="outlined"
-                  shape="rounded"
+                  variant='outlined'
+                  shape='rounded'
                   count={data?.totalPages ?? 0}
                   page={pagination.pageIndex + 1}
                   onChange={(event, value) =>
@@ -359,12 +362,12 @@ const Class = () => {
             }}
           >
             <Box
-              className="place-items-center"
+              className='place-items-center'
               sx={{ display: 'grid', width: '100%' }}
             >
               <Pagination
-                variant="outlined"
-                shape="rounded"
+                variant='outlined'
+                shape='rounded'
                 count={data?.totalPages ?? 0}
                 page={pagination.pageIndex + 1}
                 onChange={(event, value) =>
@@ -394,40 +397,40 @@ const Class = () => {
       <Dialog
         open={openConfirmDialog}
         onClose={handleCloseConfirmDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
       >
-        <DialogTitle id="alert-dialog-title">{'Confirm Deletion'}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{'Confirm Deletion'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText id='alert-dialog-description'>
             Are you sure you want to delete this guest?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseConfirmDialog} color="primary">
+          <Button onClick={handleCloseConfirmDialog} color='primary'>
             Cancel
           </Button>
-          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+          <Button onClick={handleConfirmDelete} color='primary' autoFocus>
             Delete
           </Button>
         </DialogActions>
       </Dialog>
       {/* toast */}
       {showSuccessToast && (
-        <Toast className="absolute bottom-4 left-4">
-          <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
-            <HiCheck className="h-5 w-5" />
+        <Toast className='absolute bottom-4 left-4'>
+          <div className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200'>
+            <HiCheck className='h-5 w-5' />
           </div>
-          <div className="ml-3 text-sm font-normal">Data Updated Success.</div>
+          <div className='ml-3 text-sm font-normal'>Data Updated Success.</div>
           <Toast.Toggle onClick={() => setShowSuccessToast(false)} />
         </Toast>
       )}
       {showErrorToast && (
-        <Toast className="absolute bottom-4 left-4">
-          <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-            <IoMdClose className="h-5 w-5" />
+        <Toast className='absolute bottom-4 left-4'>
+          <div className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200'>
+            <IoMdClose className='h-5 w-5' />
           </div>
-          <div className="ml-3 text-sm font-normal">{errorMessage}</div>
+          <div className='ml-3 text-sm font-normal'>{errorMessage}</div>
           <Toast.Toggle onClick={() => setShowErrorToast(false)} />
         </Toast>
       )}

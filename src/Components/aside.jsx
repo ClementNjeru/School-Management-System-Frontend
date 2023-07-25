@@ -58,43 +58,43 @@ const Aside = () => {
         isDark ? 'dark bg-gray-800' : ''
       }`}
     >
-      <Sidebar aria-label="Sidebar Menu" className="rounded-none">
-        <Sidebar.Logo href="#" img="favicon.png" imgAlt="">
-          Nakuru Vic Sch
+      <Sidebar aria-label='Sidebar Menu' className='rounded-none'>
+        <Sidebar.Logo href='#' img='favicon.png' imgAlt=''>
+          School Soft
         </Sidebar.Logo>
         <Sidebar.Items>
           <Sidebar.ItemGroup>
-            <Sidebar.Item as={Link} to="/dashboard" icon={dash}>
+            <Sidebar.Item as={Link} to='/dashboard' icon={dash}>
               Dashboard
             </Sidebar.Item>
 
-            <Sidebar.Item as={Link} to="/teachers" icon={teachericon}>
+            <Sidebar.Item as={Link} to='/teachers' icon={teachericon}>
               Teachers
             </Sidebar.Item>
 
-            <Sidebar.Item as={Link} to="/classes" icon={classicon}>
+            <Sidebar.Item as={Link} to='/classes' icon={classicon}>
               Classes
             </Sidebar.Item>
 
-            <Sidebar.Item as={Link} to="/students" icon={stud}>
+            <Sidebar.Item as={Link} to='/students' icon={stud}>
               Students
             </Sidebar.Item>
 
-            <Sidebar.Item as={Link} to="/payments" icon={payicon}>
+            <Sidebar.Item as={Link} to='/payments' icon={payicon}>
               Payments
             </Sidebar.Item>
 
-            <Sidebar.Collapse label="Reports" icon={reporticon}>
-              <Sidebar.Item as={Link} to="/studentclassreport">
+            <Sidebar.Collapse label='Reports' icon={reporticon}>
+              <Sidebar.Item as={Link} to='/studentclassreport'>
                 Class Report
               </Sidebar.Item>
             </Sidebar.Collapse>
 
-            <Sidebar.Item as={Link} to="/users" icon={usericon}>
+            <Sidebar.Item as={Link} to='/users' icon={usericon}>
               Users
             </Sidebar.Item>
-            <Sidebar.Collapse label="Settings" icon={gearicon}>
-              <Sidebar.Item as={Link} to="/school">
+            <Sidebar.Collapse label='Settings' icon={gearicon}>
+              <Sidebar.Item as={Link} to='/school'>
                 School Info
               </Sidebar.Item>
             </Sidebar.Collapse>
@@ -105,7 +105,7 @@ const Aside = () => {
             label={!isDark ? 'Light Mode' : 'Dark Mode'}
             checked={isDark}
             onChange={toggleTheme}
-            className="my-4 mx-2 mb-auto"
+            className='my-4 mx-2 mb-auto'
           >
             {isDark ? <FaSun /> : <FaMoon />}
           </ToggleSwitch>
@@ -114,11 +114,11 @@ const Aside = () => {
               isDark ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
-            <div className="flex items-end  pb-6 w-full ">
+            <div className='flex items-end  pb-6 w-full '>
               <Avatar placeholderInitials={initials} rounded={true}>
-                <div className="space-y-1 font-medium dark:text-white">
+                <div className='space-y-1 font-medium dark:text-white'>
                   <div>{name}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className='text-sm text-gray-500 dark:text-gray-400'>
                     {role}
                   </div>
                 </div>
@@ -126,12 +126,12 @@ const Aside = () => {
             </div>
             <div>
               <Button
-                className="mx-auto w-full"
-                color="purple"
+                className='mx-auto w-full'
+                color='purple'
                 onClick={signOutUser}
               >
                 Sign out
-                <CiLogout className="ml-2 h-5 w-5" />
+                <CiLogout className='ml-2 h-5 w-5' />
               </Button>
             </div>
           </div>
