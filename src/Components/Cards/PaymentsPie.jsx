@@ -44,12 +44,12 @@ const renderCustomizedLabel = ({
 function Chart() {
   const [selectedGrade, setSelectedGrade] = useState();
 
-  const fetchData = async (_, selectedGrade) => {
+  const fetchData = async (selectedGrade) => {
     try {
       if (!selectedGrade) return;
       const [feeResponce] = await Promise.all([
         axios.get(
-          `${process.env.REACT_APP_BASE_URL}/students/fee-status/${selectedGrade}}`
+          `${process.env.REACT_APP_BASE_URL}/students/fee-status/${selectedGrade}`
         ),
       ]);
 
@@ -63,7 +63,7 @@ function Chart() {
 
   const { data, isLoading } = useQuery(
     ['dashboard-data', selectedGrade],
-    fetchData,
+    () => fetchData(selectedGrade),
     {
       enabled: !!selectedGrade,
     }
