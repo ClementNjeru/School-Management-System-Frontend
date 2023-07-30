@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Text } from 'recharts';
+import { PieChart, Pie, Cell, Text, Bar} from 'recharts';
 import { Box } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import CardLoader from '../Loaders/CardLoaders';
 
 const COLORS = [
-  '#9F7AEA',
-  '#4C51BF',
-  '#38B2AC',
-  '#ED8936',
-  '#FC8181',
-  '#4299E1',
+  {fill:'#9F7AEA', value: 'paid'},
+  {fill:'#ED64A6', value: 'unpaid'},
+  {fill:'#ED8936', value: 'partial'}
+  // '#4C51BF',
+  // '#38B2AC',
+  // '#ED8936',
+  // '#FC8181',
+  // '#4299E1',
+
 ];
 
 const RADIAN = Math.PI / 180;
@@ -32,7 +35,7 @@ const renderCustomizedLabel = ({
     <text
       x={x}
       y={y}
-      fill='grey'
+      fill='black'
       textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline='central'
     >
@@ -149,9 +152,17 @@ function Chart() {
                 </Text>
               )}
             </PieChart>
+
           </>
         )}
       </>
+      {/* <Pie dataKey="value" pieSize={50} fill="red" /> */}
+
+      {/* <>
+            <Cell dataKey="value" barSize={30} fill="red" />
+            <Bar dataKey="" barSize={30} fill="#8884d8" />
+      </> */}
+          
     </div>
   );
 }
