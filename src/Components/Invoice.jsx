@@ -200,41 +200,54 @@ function Invoice({ payments }) {
         const invoiceGeneratedText = `${day} ${month} ${year} ${hour}:${minute}:${second}`;
 
         doc.setFontSize(18);
-        doc.text(title, 20, 10);
+        doc.text(title, 10, 10);
+        // doc.setFontSize(12);
+        // doc.text(schoolName, 10, 20);
+        // doc.text(schoolAddress, 10, 30);
+        // doc.text(schoolAddress2, 10, 40);
+        // doc.text(`Tel: ${schoolPhone} / ${schoolPhone2}`, 10, 50);
+        // doc.text(`Email: ${schoolEmail}`, 10, 60);
+        // doc.text(`Town: ${schoolTown}`, 10, 70);
+
         doc.setFontSize(12);
-        doc.text(schoolName, 20, 20);
-        doc.text(schoolAddress, 20, 30);
-        doc.text(schoolAddress2, 20, 40);
-        doc.text(`Tel: ${schoolPhone} / ${schoolPhone2}`, 20, 50);
-        doc.text(`Email: ${schoolEmail}`, 20, 60);
-        doc.text(`Town: ${schoolTown}`, 20, 70);
+        let leftMargin = 10;
+        let rightMargin = doc.internal.pageSize.width - 90; // Adjust as needed
+        let lineSpacing = 16;
+
+        // Left Column
+        doc.text(schoolName, leftMargin, lineSpacing);
+        doc.text(schoolAddress, leftMargin, 22);
+        doc.text(schoolAddress2, leftMargin, 32);
+
+        // Right Column
+        doc.text(
+          `Tel: ${schoolPhone} / ${schoolPhone2}`,
+          rightMargin,
+          lineSpacing
+        );
+        doc.text(`Email: ${schoolEmail}`, rightMargin, 22);
+        doc.text(`Town: ${schoolTown}`, rightMargin, 32);
         doc.setFontSize(16);
-        doc.text('Student Details:', 20, 85);
+        doc.text('Student Details:', 10, 45);
         doc.setFontSize(10);
-        doc.text(`Name: ${studentName}`, 20, 95);
-        doc.text(`Grade: ${className}`, 20, 105);
-        doc.text(`Guardian: ${guardianName}`, 20, 115);
+        doc.text(`Name: ${studentName}`, 10, 52);
+        doc.text(`Grade: ${className}`, 10, 62);
+        doc.text(`Guardian: ${guardianName}`, 10, 72);
         doc.setFontSize(16);
-        doc.text('Invoice Details:', 120, 85);
+        doc.text('Invoice Details:', rightMargin, 45);
         doc.setFontSize(10);
-        doc.text(`Date Paid: ${invoiceGeneratedText}`, 120, 95);
-        doc.text(`Amount: ${KES.format(payments.amount)}`, 120, 105);
-        doc.text(`Mode of Payment: ${payments.payment_mode}`, 120, 115);
+        doc.text(`Date Paid: ${invoiceGeneratedText}`, rightMargin, 52);
+        doc.text(`Amount: ${KES.format(payments.amount)}`, rightMargin, 62);
+        doc.text(`Mode of Payment: ${payments.payment_mode}`, rightMargin, 72);
 
         let totalPaid = payments.amount ?? 0;
 
-        let tuition = (totalPaid * 0.6).toFixed(2);
-        let transport = (totalPaid * 0.15).toFixed(2);
-        let food = (totalPaid * 0.15).toFixed(2);
-        let boarding = (totalPaid * 0.1).toFixed(2);
         doc.autoTable({
-          startY: 120,
+          startY: 82,
           head: [['Item', 'Amount']],
           body: [
             ['Amount Paid', KES.format(totalPaid)],
-            // ['Transport', KES.format(transport)],
-            // ['Food', KES.format(food)],
-            // ['Boarding', KES.format(boarding)],
+
             ['Total Balance Due', KES.format(feeBalance)],
           ],
           foot: [['Paid Total', KES.format(payments.amount)]],
@@ -254,11 +267,11 @@ function Invoice({ payments }) {
         doc.setFontSize(10);
         const startY1 = doc.autoTable.previous.finalY + 10;
 
-        doc.text(`Served By: ${StaffName}`, 20, startY1);
-        doc.text('Bank Details:', 20, startY1 + 10);
-        doc.text(`Account No: ${bankAcc}`, 20, startY1 + 20);
-        doc.text(`Bank: ${bankName}`, 20, startY1 + 30);
-        doc.text(`Mpesa: ${mpesaInfo}`, 20, startY1 + 40);
+        doc.text(`Served By: ${StaffName}`, 10, startY1);
+        doc.text('Bank Details:', 10, startY1 + 10);
+        doc.text(`Account No: ${bankAcc}`, 10, startY1 + 20);
+        doc.text(`Bank: ${bankName}`, 10, startY1 + 30);
+        doc.text(`Mpesa: ${mpesaInfo}`, 10, startY1 + 40);
 
         const blob = doc.output('blob');
         const url = URL.createObjectURL(blob);
