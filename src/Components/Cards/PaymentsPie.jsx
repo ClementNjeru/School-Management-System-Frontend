@@ -6,15 +6,12 @@ import axios from 'axios';
 import CardLoader from '../Loaders/CardLoaders';
 
 const COLORS = [
-  {fill:'#9F7AEA', value: 'paid'},
-  {fill:'#ED64A6', value: 'unpaid'},
-  {fill:'#ED8936', value: 'partial'}
-  // '#4C51BF',
-  // '#38B2AC',
-  // '#ED8936',
-  // '#FC8181',
-  // '#4299E1',
-
+  '#9F7AEA',
+  '#4C51BF',
+  '#38B2AC',
+  '#ED8936',
+  '#FC8181',
+  '#4299E1',
 ];
 
 const RADIAN = Math.PI / 180;
@@ -124,13 +121,22 @@ function Chart() {
               {feePayments && feePayments.length > 0 ? (
                 <Pie
                   data={feePayments || []}
+                  isAnimationActive={false}
                   cx='50%'
                   cy='50%'
-                  labelLine={false}
-                  label={renderCustomizedLabel}
+                  // labelLine={false}
+                  // label={renderCustomizedLabel}
+                  innerRadius={60}
                   outerRadius={80}
                   fill='#8884d8'
+                  paddingAngle={5}
                   dataKey='value'
+                  label={({ name, value }) => {
+                    if (value === 0) {
+                      return null;
+                    }
+                    return `${name}`;
+                  }}
                 >
                   {feePayments.map((entry, index) => (
                     <Cell
@@ -156,10 +162,9 @@ function Chart() {
           </>
         )}
       </>
-      {/* <Pie dataKey="value" pieSize={50} fill="red" /> */}
-
       {/* <>
-            <Cell dataKey="value" barSize={30} fill="red" />
+            <Pie dataKey="value" barSize={30} fill="" />
+            <Bar dataKey="" barSize={30} fill="#4299E1" />
             <Bar dataKey="" barSize={30} fill="#8884d8" />
       </> */}
           
