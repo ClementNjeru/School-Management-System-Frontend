@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import CardLoader from '../Loaders/CardLoaders';
+import { capitalizeWords } from '../../utils/formartters/capitalizeWords';
 
 const COLORS = [
   '#9F7AEA',
@@ -129,7 +130,7 @@ function Chart() {
                     if (value === 0) {
                       return null;
                     }
-                    return `${name}`;
+                    return capitalizeWords(name);
                   }}
                   innerRadius={60}
                   outerRadius={80}
