@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieChart, Cell, Pie, Tooltip, Text } from 'recharts';
+import { PieChart, Cell, Pie, Tooltip } from 'recharts';
 import CardLoader from '../Loaders/CardLoaders';
 
 const KES = new Intl.NumberFormat('en-US', {

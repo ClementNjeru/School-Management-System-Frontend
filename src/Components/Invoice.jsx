@@ -201,13 +201,6 @@ function Invoice({ payments }) {
 
         doc.setFontSize(18);
         doc.text(title, 10, 10);
-        // doc.setFontSize(12);
-        // doc.text(schoolName, 10, 20);
-        // doc.text(schoolAddress, 10, 30);
-        // doc.text(schoolAddress2, 10, 40);
-        // doc.text(`Tel: ${schoolPhone} / ${schoolPhone2}`, 10, 50);
-        // doc.text(`Email: ${schoolEmail}`, 10, 60);
-        // doc.text(`Town: ${schoolTown}`, 10, 70);
 
         doc.setFontSize(12);
         let leftMargin = 10;

@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Text, Bar} from 'recharts';
+import React, { useState } from 'react';
+import { PieChart, Pie, Cell, Text } from 'recharts';
 import { Box } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import CardLoader from '../Loaders/CardLoaders';
 
 const COLORS = [
-  {fill:'#9F7AEA', value: 'paid'},
-  {fill:'#ED64A6', value: 'unpaid'},
-  {fill:'#ED8936', value: 'partial'}
-  // '#4C51BF',
-  // '#38B2AC',
-  // '#ED8936',
-  // '#FC8181',
-  // '#4299E1',
-
+  '#9F7AEA',
+  '#4C51BF',
+  '#38B2AC',
+  '#ED8936',
+  '#FC8181',
+  '#4299E1',
 ];
 
 const RADIAN = Math.PI / 180;
@@ -124,12 +121,20 @@ function Chart() {
               {feePayments && feePayments.length > 0 ? (
                 <Pie
                   data={feePayments || []}
+                  isAnimationActive={false}
                   cx='50%'
                   cy='50%'
                   labelLine={false}
-                  label={renderCustomizedLabel}
+                  label={({ name, value }) => {
+                    if (value === 0) {
+                      return null;
+                    }
+                    return `${name}`;
+                  }}
+                  innerRadius={60}
                   outerRadius={80}
                   fill='#8884d8'
+                  paddingAngle={5}
                   dataKey='value'
                 >
                   {feePayments.map((entry, index) => (
@@ -152,17 +157,9 @@ function Chart() {
                 </Text>
               )}
             </PieChart>
-
           </>
         )}
       </>
-      {/* <Pie dataKey="value" pieSize={50} fill="red" /> */}
-
-      {/* <>
-            <Cell dataKey="value" barSize={30} fill="red" />
-            <Bar dataKey="" barSize={30} fill="#8884d8" />
-      </> */}
-          
     </div>
   );
 }
