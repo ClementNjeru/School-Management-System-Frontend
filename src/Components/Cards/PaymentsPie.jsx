@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Text, Bar} from 'recharts';
+import React, { useState } from 'react';
+import { PieChart, Pie, Cell, Text } from 'recharts';
 import { Box } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import CardLoader from '../Loaders/CardLoaders';
+import { capitalizeWords } from '../../utils/formartters/capitalizeWords';
 
 const COLORS = [
   '#9F7AEA',
@@ -158,7 +159,6 @@ function Chart() {
                 </Text>
               )}
             </PieChart>
-
           </>
         )}
       </>
