@@ -152,9 +152,6 @@ const Login = () => {
                   />
                 )}
               />
-              {/* {errors.email && (
-                <p className="text-red-500">{errors.email.message}</p>
-              )} */}
             </div>
             <div>
               <div className='mb-2 block'>
