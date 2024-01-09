@@ -71,11 +71,8 @@ const StudentClassReport = () => {
         `${process.env.REACT_APP_BASE_URL}/class/${selectedGrade}/students`
       );
 
-      fetchURL.searchParams.set(
-        'start',
+      fetchURL.searchParams.set('page', `${pagination.pageIndex + 1}`);
 
-        `${pagination.pageIndex * pagination.pageSize}`
-      );
 
       fetchURL.searchParams.set('size', `${pagination.pageSize}`);
 
